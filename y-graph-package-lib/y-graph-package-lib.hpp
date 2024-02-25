@@ -13,8 +13,7 @@
 #include <ranges>
 
 #include "SortsLibrary/Sorts.inl"
-#include "Utils/Headers/Benchmarks.hpp"
-#include "Utils/Headers/Stopwatch.hpp"
+#include "Utils/Headers/Stopwatch.inl"
 
 // TODO: Reference additional headers your program requires here.
 

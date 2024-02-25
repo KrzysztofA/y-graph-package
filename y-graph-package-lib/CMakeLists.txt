@@ -9,17 +9,16 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-project ("y-graph-package-lib" VERSION 0.0.1)
+project ("y-graph-package-lib" VERSION 0.1.0)
 
 # Add source to this project's executable.
 add_executable (y-graph-package-lib 
 				"y-graph-package-lib.cpp" 
 				"y-graph-package-lib.hpp" 
 				"SortsLibrary/Sorts.inl"
-				"Utils/Source/Benchmarks.cpp"
-				"Utils/Headers/Benchmarks.hpp"
-				"Utils/Source/Stopwatch.cpp"
-				"Utils/Headers/Stopwatch.hpp"
+				"Utils/Headers/Stopwatch.inl"
+				"Utils/Headers/Nodes.hpp"
+				"Utils/Source/Nodes.cpp"
 )
 
 set_property(TARGET y-graph-package-lib PROPERTY CXX_STANDARD 23)

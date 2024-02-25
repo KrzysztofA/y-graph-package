@@ -5,9 +5,11 @@ void print_container(const T&);
 
 typedef std::vector<int>::iterator veci;
 
+typedef yasuzume::utils::Stopwatch Stopwatch;
+
 int main()
 {
-	std::vector<int> test_container{ 0, 1, 23, 31, 1, 2, 3, 45, 656, 123, 234, 12, 423, 0, 54, 32, 12, 12, 11, 21, 564, 223, 445, 999, 42, 420, 69, 71, 821, 2, 12, 34, 24, 25, 26, 30, 40, 49, 87, 99, 70, 21 };
+	std::vector<int> test_container{ 0, 1, 23, 31, 1, 2, 3, 45, 656, 123, 234, 12, 423, 0, 54, 32, 12, 12, 11, 21, 564, 223, 445, 999, 42, 420, 69, 71, 821, 2, 12, 34, 24, 25, 26, 30, 40, 49, 87, 99, 70, 21, 1024, 12512, 125, 12454, 210, 21, 212, 214, 51, 521, 215, 215 };
 	std::vector<int> test_container2(test_container.size());
 	std::vector<int> test_container3(test_container.size());
 	std::vector<int> test_container4(test_container.size());
@@ -32,70 +34,68 @@ int main()
 	yasuzume::sorts::StableStandardSort<std::vector<int>> std_stable{};
 	yasuzume::sorts::QuickSortAtomic<std::vector<int>> quick_sort_atomic{};
 
-	yasuzume::utils::Stopwatch stopwatch{};
-
 	std::cout << "BUBBLE SORT\n\n";
 	print_container(test_container);
-	stopwatch.start();
+	Stopwatch::start();
 	bubble_sort(std::begin(test_container), std::end(test_container));
-	std::cout << "\n" << stopwatch.end() << " time\n\n";
+	std::cout << "\n" << Stopwatch::end() << " time\n\n";
 	print_container(test_container);
 	std::cout << "\n";
 
 	std::cout << "INSERTION SORT\n\n";
 	print_container(test_container2);
-	stopwatch.start();
+	Stopwatch::start();
 	insertion_sort(std::begin(test_container2), std::end(test_container2));
-	std::cout << "\n" << stopwatch.end() << " time\n\n";
+	std::cout << "\n" << Stopwatch::end() << " time\n\n";
 	print_container(test_container2);
 	std::cout << "\n";
 
 	std::cout << "SELECTION SORT\n\n";
 	print_container(test_container3);
-	stopwatch.start();
+	Stopwatch::start();
 	selection_sort(std::begin(test_container3), std::end(test_container3));
-	std::cout << "\n" << stopwatch.end() << " time\n\n";
+	std::cout << "\n" << Stopwatch::end() << " time\n\n";
 	print_container(test_container3);
 	std::cout << "\n";
 
 	std::cout << "QUICK SORT\n\n";
 	print_container(test_container4);
-	stopwatch.start();
+	Stopwatch::start();
 	quick_sort(std::begin(test_container4), std::end(test_container4));
-	std::cout << "\n" << stopwatch.end() << " time\n\n";
+	std::cout << "\n" << Stopwatch::end() << " time\n\n";
 	print_container(test_container4);
 	std::cout << "\n";
 
 	std::cout << "MERGE SORT\n\n";
 	print_container(test_container5);
-	stopwatch.start();
+	Stopwatch::start();
 	merge_sort(std::begin(test_container5), std::end(test_container5));
-	std::cout << "\n" << stopwatch.end() << " time\n\n";
+	std::cout << "\n" << Stopwatch::end() << " time\n\n";
 	print_container(test_container5);
 	std::cout << "\n";
 
 	std::cout << "STD::SORT\n\n";
 	print_container(test_container6);
-	stopwatch.start();
+	Stopwatch::start();
 	std_sort(std::begin(test_container6), std::end(test_container6));
-	std::cout << "\n" << stopwatch.end() << " time\n\n";
+	std::cout << "\n" << Stopwatch::end() << " time\n\n";
 	print_container(test_container6);
 	std::cout << "\n";
 
 	std::cout << "STD::STABLE SORT\n\n";
 	print_container(test_container7);
-	stopwatch.start();
+	Stopwatch::start();
 	std_stable(std::begin(test_container7), std::end(test_container7));
-	std::cout << "\n" << stopwatch.end() << " time\n\n";
+	std::cout << "\n" << Stopwatch::end() << " time\n\n";
 	print_container(test_container7);
 	std::cout << "\n";
 
 	
 	std::cout << "QUICK SORT ATOMIC\n\n";
 	print_container(test_container8);
-	stopwatch.start();
+	Stopwatch::start();
 	quick_sort_atomic(std::begin(test_container8), std::end(test_container8));
-	std::cout << "\n" << stopwatch.end() << " time\n\n";
+	std::cout << "\n" << Stopwatch::end() << " time\n\n";
 	print_container(test_container8);
 	std::cout << "\n";
 	

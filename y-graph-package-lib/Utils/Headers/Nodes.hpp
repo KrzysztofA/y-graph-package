@@ -1,10 +1,10 @@
 #ifndef Y_GRAPH_NODES_HPP
 #define Y_GRAPH_NODES_HPP
 
-#include <string>
-#include <vector>
 #include <memory>
 #include <set>
+#include <string>
+#include <vector>
 
 namespace yasuzume::graph
 {
@@ -16,22 +16,22 @@ namespace yasuzume::graph
 
   class GraphNode {
   public:
-    GraphNode( std::string name );
+    GraphNode( std::string );
     GraphNode( const GraphNode& );
-    GraphNode( const GraphNode&& );
+    GraphNode( GraphNode&& );
     GraphNode& operator=( const GraphNode& );
-    GraphNode& operator=( const GraphNode&& );
+    GraphNode& operator=( GraphNode&& );
     ~GraphNode() noexcept;
 
-    static void create_edge( GraphNode&, GraphNode&, const float&, const Direction& );
+    static void create_edge( GraphNode&, GraphNode&, float, Direction );
 
     class Node {
     public:
       Node( GraphNode& );
       Node( const Node& );
-      Node( const Node&& );
+      Node( Node&& );
       Node& operator=( const Node& );
-      Node& operator=( const Node&& );
+      Node& operator=( Node&& );
       ~Node() noexcept;
 
       [[nodiscard]] GraphNode& get() const;
@@ -39,16 +39,16 @@ namespace yasuzume::graph
       GraphNode& main;
     };
 
-    class Edge
+    class Edge : std::enable_shared_from_this<Edge>
     {
     public:
-      Edge( std::shared_ptr<GraphNode::Node>, std::shared_ptr<GraphNode::Node>, float, Direction );
+      Edge( std::shared_ptr<GraphNode::Node>, std::shared_ptr<GraphNode::Node>, const float&, const Direction& );
       Edge( const Edge& );
-      Edge( const Edge&& );
+      Edge( Edge&& );
       Edge& operator=( const Edge& );
-      Edge& operator=( const Edge&& );
+      Edge& operator=( Edge&& );
       ~Edge() noexcept;
-      
+
       [[nodiscard]] bool operator<( const Edge& ) const;
       [[nodiscard]] bool operator>( const Edge& ) const;
       [[nodiscard]] bool operator==( const Edge& ) const;

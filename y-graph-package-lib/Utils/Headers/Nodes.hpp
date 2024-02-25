@@ -69,6 +69,8 @@ namespace yasuzume::graph
 
     void add_edge( std::shared_ptr<Edge> );
     void remove_edge( std::shared_ptr<Edge> );
+
+    std::set<std::shared_ptr<Edge>> get_edges();
   private:
     std::string name;
     std::shared_ptr<Node> node;

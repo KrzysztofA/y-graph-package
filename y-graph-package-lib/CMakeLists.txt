@@ -19,6 +19,8 @@ add_executable (y-graph-package-lib
 				"Utils/Headers/Stopwatch.inl"
 				"Utils/Headers/Nodes.hpp"
 				"Utils/Source/Nodes.cpp"
+				"Utils/Headers/Graphs.hpp"
+				"Utils/Source/Graphs.cpp"
 )
 
 set_property(TARGET y-graph-package-lib PROPERTY CXX_STANDARD 23)

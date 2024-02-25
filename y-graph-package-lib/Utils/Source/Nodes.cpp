@@ -155,5 +155,10 @@ namespace yasuzume::graph
     edges.erase( edge );
   }
 
+  std::set<std::shared_ptr<GraphNode::Edge>> GraphNode::get_edges()
+  {
+    return edges;
+  }
+
 #pragma endregion
 }

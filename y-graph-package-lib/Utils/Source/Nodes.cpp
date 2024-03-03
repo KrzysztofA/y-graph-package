@@ -1,4 +1,7 @@
+#include <utility>
+
 #include "../Headers/Nodes.hpp"
+#include "../Headers/Numeric.inl"
 
 namespace yasuzume::graph
 {
@@ -6,47 +9,49 @@ namespace yasuzume::graph
 
 #pragma region Constructors
 
-  GraphNode::Edge::Edge( std::shared_ptr<GraphNode::Node> _left_node, std::shared_ptr<GraphNode::Node> _right_node, const float& _weight, const Direction& _direction )
-    : left_node( _left_node ), right_node( _right_node ), weight( _weight ), direction( _direction )
-  {}
-  GraphNode::Edge::Edge( const Edge& other ) = default;
-  GraphNode::Edge::Edge( Edge&& other ) = default;
-  GraphNode::Edge& GraphNode::Edge::operator=( const Edge& other ) = default;
-  GraphNode::Edge& GraphNode::Edge::operator=( Edge&& other ) = default;
-  GraphNode::Edge::~Edge() = default;
+  GraphNode::Edge::Edge( std::shared_ptr< Node > _left_node, std::shared_ptr< Node > _right_node, const float& _weight,
+                         const Direction&        _direction )
+    : weight( _weight ), direction( _direction ), left_node( std::move( _left_node ) ), right_node(
+        std::move( _right_node ) ) {}
+
+  GraphNode::Edge::Edge( const Edge& _other ) = default;
+  GraphNode::Edge::Edge( Edge&& _other ) noexcept = default;
+  GraphNode::Edge& GraphNode::Edge::operator=( const Edge& _other ) = default;
+  GraphNode::Edge& GraphNode::Edge::operator=( Edge&& _other ) noexcept = default;
+  GraphNode::Edge::~Edge() noexcept = default;
 
 #pragma endregion
 
 #pragma region Operators
 
-  bool GraphNode::Edge::operator<( const Edge& other ) const
+  bool GraphNode::Edge::operator<( const Edge& _other ) const
   {
-    return weight < other.get_weight();
+    return weight < _other.get_weight();
   }
 
-  bool GraphNode::Edge::operator<=( const Edge& other ) const
+  bool GraphNode::Edge::operator<=( const Edge& _other ) const
   {
-    return weight < other.get_weight();
+    return weight < _other.get_weight();
   }
 
-  bool GraphNode::Edge::operator>( const Edge& other ) const
+  bool GraphNode::Edge::operator>( const Edge& _other ) const
   {
-    return weight > other.get_weight();
+    return weight > _other.get_weight();
   }
 
-  bool GraphNode::Edge::operator>=( const Edge& other ) const
+  bool GraphNode::Edge::operator>=( const Edge& _other ) const
   {
-    return weight >= other.get_weight();
+    return weight >= _other.get_weight();
   }
 
-  bool GraphNode::Edge::operator==( const Edge& other ) const
+  bool GraphNode::Edge::operator==( const Edge& _other ) const
   {
-    return weight == other.get_weight();
+    return utils::compare_almost( weight, _other.get_weight() );
   }
 
-  bool GraphNode::Edge::operator!=( const Edge& other ) const
+  bool GraphNode::Edge::operator!=( const Edge& _other ) const
   {
-    return weight != other.get_weight();
+    return !utils::compare_almost( weight, _other.get_weight() );
   }
 
 #pragma endregion
@@ -63,28 +68,43 @@ namespace yasuzume::graph
     return direction;
   }
 
-  void GraphNode::Edge::set_direction( Direction _direction )
+  std::shared_ptr< GraphNode::Node > GraphNode::Edge::get_left() const
+  {
+    return left_node;
+  }
+
+  std::shared_ptr< GraphNode::Node > GraphNode::Edge::get_right() const
+  {
+    return right_node;
+  }
+
+  void GraphNode::Edge::set_direction( const Direction _direction )
   {
     direction = _direction;
     switch( direction )
     {
     case LeftToRight:
-      left_node->get().add_edge( shared_from_this() );
-      right_node->get().remove_edge( shared_from_this() );
-      break;
+      {
+        left_node->get().lock()->add_edge( shared_from_this() );
+        right_node->get().lock()->remove_edge(shared_from_this());
+        break;
+      }
     case RightToLeft:
-      right_node->get().add_edge( shared_from_this() );
-      left_node->get().remove_edge( shared_from_this() );
-      break;
+      {
+        right_node->get().lock()->add_edge( shared_from_this() );
+        left_node->get().lock()->remove_edge( shared_from_this() );
+        break;
+      }
     case Undirected:
-    default:
-      left_node->get().add_edge( shared_from_this() );
-      right_node->get().add_edge( shared_from_this() );
-      break;
+      {
+        left_node->get().lock()->add_edge( shared_from_this() );
+        right_node->get().lock()->add_edge( shared_from_this() );
+        break;
+      }
     }
   }
 
-  void GraphNode::Edge::set_weight( float _weight )
+  void GraphNode::Edge::set_weight( const float _weight )
   {
     weight = _weight;
   }
@@ -95,18 +115,15 @@ namespace yasuzume::graph
 
 #pragma region Node
 
-  GraphNode::Node::Node( GraphNode& _main ) : main( _main ) {}
+  GraphNode::Node::Node( std::weak_ptr< GraphNode > _main ) : main( std::move( _main ) ) {}
 
-  GraphNode::Node::Node( const Node& other ) = default;
+  GraphNode::Node::Node( const Node& _other ) = default;
 
-  GraphNode::Node::Node( Node&& other ) = default;
+  GraphNode::Node::Node( Node&& _other ) noexcept = default;
 
-  GraphNode::Node& GraphNode::Node::operator=( const GraphNode::Node& ) = default;
-
-  GraphNode::Node& GraphNode::Node::operator=( GraphNode::Node&& ) = default;
   GraphNode::Node::~Node() noexcept = default;
 
-  GraphNode& GraphNode::Node::get() const
+  std::weak_ptr< GraphNode > GraphNode::Node::get() const
   {
     return main;
   }
@@ -115,49 +132,61 @@ namespace yasuzume::graph
 
 #pragma region GraphNode
 
-  void GraphNode::create_edge( GraphNode& left, GraphNode& right, float weight, Direction direction )
+  std::shared_ptr< GraphNode::Edge > GraphNode::create_edge( const std::shared_ptr< GraphNode >& _left, const std::shared_ptr< GraphNode >& _right, float _weight, Direction _direction )
   {
-    auto edge = std::make_shared<GraphNode::Edge>( left.node, right.node, weight, direction );
-    switch( direction )
+    const auto edge = std::make_shared< Edge >( _left->node, _right->node, _weight, _direction );
+    switch( _direction )
     {
     case LeftToRight:
-      left.add_edge( edge );
-      break;
+      {
+        _left->add_edge( edge );
+        break;
+      }
     case RightToLeft:
-      right.add_edge( edge );
-      break;
+      {
+        _right->add_edge( edge );
+        break;
+      }
     case Undirected:
-    default:
-      left.add_edge( edge );
-      right.add_edge( edge );
-      break;
+      {
+        _left->add_edge( edge );
+        _right->add_edge( edge );
+        break;
+      }
     }
+
+    return edge;
   }
 
-  GraphNode::GraphNode( std::string _name ) : name( name )
+  GraphNode::GraphNode( std::string _name ) : name( std::move( _name ) )
   {
-    node = std::make_shared<GraphNode::Node>( *this );
+    node = std::make_shared< Node >( weak_from_this() );
   }
 
-  GraphNode::GraphNode( const GraphNode& other ) = default;
-  GraphNode::GraphNode( GraphNode&& other ) = default;
-  GraphNode& GraphNode::operator=( const GraphNode& other ) = default;
-  GraphNode& GraphNode::operator=( GraphNode&& other ) = default;
+  GraphNode::GraphNode( const GraphNode& _other ) = default;
+  GraphNode::GraphNode( GraphNode&& _other ) noexcept = default;
+  GraphNode& GraphNode::operator=( const GraphNode& _other ) = default;
+  GraphNode& GraphNode::operator=( GraphNode&& _other ) noexcept = default;
   GraphNode::~GraphNode() noexcept = default;
 
-  void GraphNode::add_edge( std::shared_ptr<GraphNode::Edge> edge )
+  void GraphNode::add_edge( const std::shared_ptr< Edge >& _edge )
   {
-    edges.insert( edge );
+    edges.insert( _edge );
   }
 
-  void GraphNode::remove_edge( std::shared_ptr<GraphNode::Edge> edge )
+  void GraphNode::remove_edge( const std::shared_ptr< Edge >& _edge )
   {
-    edges.erase( edge );
+    edges.erase( _edge );
   }
 
-  std::set<std::shared_ptr<GraphNode::Edge>> GraphNode::get_edges()
+  std::set< std::shared_ptr< GraphNode::Edge > > GraphNode::get_edges()
   {
     return edges;
+  }
+
+  std::string GraphNode::get_name()
+  {
+    return name;
   }
 
 #pragma endregion

@@ -4,49 +4,51 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 namespace yasuzume::graph
 {
-  enum Direction {
+  enum Direction
+  {
     LeftToRight,
     RightToLeft,
     Undirected,
   };
 
-  class GraphNode {
+  class GraphNode : std::enable_shared_from_this< GraphNode >
+  {
   public:
-    GraphNode( std::string );
+    explicit GraphNode( std::string );
     GraphNode( const GraphNode& );
-    GraphNode( GraphNode&& );
+    GraphNode( GraphNode&& ) noexcept;
     GraphNode& operator=( const GraphNode& );
-    GraphNode& operator=( GraphNode&& );
+    GraphNode& operator=( GraphNode&& ) noexcept;
     ~GraphNode() noexcept;
 
-    static void create_edge( GraphNode&, GraphNode&, float, Direction );
 
-    class Node {
-    public:
-      Node( GraphNode& );
-      Node( const Node& );
-      Node( Node&& );
-      Node& operator=( const Node& );
-      Node& operator=( Node&& );
-      ~Node() noexcept;
-
-      [[nodiscard]] GraphNode& get() const;
-    private:
-      GraphNode& main;
-    };
-
-    class Edge : std::enable_shared_from_this<Edge>
+    class Node
     {
     public:
-      Edge( std::shared_ptr<GraphNode::Node>, std::shared_ptr<GraphNode::Node>, const float&, const Direction& );
+      explicit Node( std::weak_ptr< GraphNode > );
+      Node( const Node& );
+      Node( Node&& ) noexcept;
+      Node& operator=( const Node& ) = delete;
+      Node& operator=( Node&& ) noexcept = delete;
+      ~Node() noexcept;
+
+      [[nodiscard]] std::weak_ptr< GraphNode > get() const;
+
+    private:
+      std::weak_ptr< GraphNode > main;
+    };
+
+    class Edge : std::enable_shared_from_this< Edge >
+    {
+    public:
+      Edge( std::shared_ptr< Node >, std::shared_ptr< Node >, const float&, const Direction& );
       Edge( const Edge& );
-      Edge( Edge&& );
+      Edge( Edge&& ) noexcept;
       Edge& operator=( const Edge& );
-      Edge& operator=( Edge&& );
+      Edge& operator=( Edge&& ) noexcept;
       ~Edge() noexcept;
 
       [[nodiscard]] bool operator<( const Edge& ) const;
@@ -56,25 +58,32 @@ namespace yasuzume::graph
       [[nodiscard]] bool operator>=( const Edge& ) const;
       [[nodiscard]] bool operator!=( const Edge& ) const;
 
-      [[nodiscard]] float get_weight() const;
+      [[nodiscard]] float     get_weight() const;
       [[nodiscard]] Direction get_direction() const;
-      void set_direction( Direction );
-      void set_weight( float );
+      [[nodiscard]] std::shared_ptr< Node > get_left() const;
+      [[nodiscard]] std::shared_ptr< Node > get_right() const;
+      void                    set_direction( Direction );
+      void                    set_weight( float );
+
+
     private:
-      float weight = 0;
-      Direction direction;
-      std::shared_ptr<GraphNode::Node> left_node;
-      std::shared_ptr<GraphNode::Node> right_node;
+      float                   weight = 0;
+      Direction               direction;
+      std::shared_ptr< Node > left_node;
+      std::shared_ptr< Node > right_node;
     };
 
-    void add_edge( std::shared_ptr<Edge> );
-    void remove_edge( std::shared_ptr<Edge> );
+    static std::shared_ptr< Edge > create_edge( const std::shared_ptr < GraphNode >&, const std::shared_ptr< GraphNode >&, float, Direction );
+    void                           add_edge( const std::shared_ptr< Edge >& );
+    void                           remove_edge( const std::shared_ptr< Edge >& );
 
-    std::set<std::shared_ptr<Edge>> get_edges();
+    std::set< std::shared_ptr< Edge > > get_edges();
+    std::string get_name();
+
   private:
-    std::string name;
-    std::shared_ptr<Node> node;
-    std::set<std::shared_ptr<Edge>> edges{};
+    std::string                         name;
+    std::shared_ptr< Node >             node;
+    std::set< std::shared_ptr< Edge > > edges{};
   };
 }
 

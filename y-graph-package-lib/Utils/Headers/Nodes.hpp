@@ -14,7 +14,7 @@ namespace yasuzume::graph
     Undirected,
   };
 
-  class GraphNode : std::enable_shared_from_this< GraphNode >
+  class GraphNode : std::enable_shared_from_this<GraphNode>
   {
   public:
     explicit GraphNode( std::string );
@@ -24,27 +24,10 @@ namespace yasuzume::graph
     GraphNode& operator=( GraphNode&& ) noexcept;
     ~GraphNode() noexcept;
 
-
-    class Node
+    class Edge : std::enable_shared_from_this<Edge>
     {
     public:
-      explicit Node( std::weak_ptr< GraphNode > );
-      Node( const Node& );
-      Node( Node&& ) noexcept;
-      Node& operator=( const Node& ) = delete;
-      Node& operator=( Node&& ) noexcept = delete;
-      ~Node() noexcept;
-
-      [[nodiscard]] std::weak_ptr< GraphNode > get() const;
-
-    private:
-      std::weak_ptr< GraphNode > main;
-    };
-
-    class Edge : std::enable_shared_from_this< Edge >
-    {
-    public:
-      Edge( std::shared_ptr< Node >, std::shared_ptr< Node >, const float&, const Direction& );
+      Edge( std::weak_ptr<GraphNode>, std::weak_ptr<GraphNode>, const float&, const Direction& );
       Edge( const Edge& );
       Edge( Edge&& ) noexcept;
       Edge& operator=( const Edge& );
@@ -58,32 +41,30 @@ namespace yasuzume::graph
       [[nodiscard]] bool operator>=( const Edge& ) const;
       [[nodiscard]] bool operator!=( const Edge& ) const;
 
-      [[nodiscard]] float     get_weight() const;
-      [[nodiscard]] Direction get_direction() const;
-      [[nodiscard]] std::shared_ptr< Node > get_left() const;
-      [[nodiscard]] std::shared_ptr< Node > get_right() const;
-      void                    set_direction( Direction );
-      void                    set_weight( float );
-
+      [[nodiscard]] float                 get_weight() const;
+      [[nodiscard]] Direction             get_direction() const;
+      [[nodiscard]] std::weak_ptr<GraphNode> get_left() const;
+      [[nodiscard]] std::weak_ptr<GraphNode> get_right() const;
+      void                                set_direction( Direction );
+      void                                set_weight( float );
 
     private:
-      float                   weight = 0;
-      Direction               direction;
-      std::shared_ptr< Node > left_node;
-      std::shared_ptr< Node > right_node;
+      float                 weight = 0;
+      Direction             direction;
+      std::weak_ptr<GraphNode> left_node;
+      std::weak_ptr<GraphNode> right_node;
     };
 
-    static std::shared_ptr< Edge > create_edge( const std::shared_ptr < GraphNode >&, const std::shared_ptr< GraphNode >&, float, Direction );
-    void                           add_edge( const std::shared_ptr< Edge >& );
-    void                           remove_edge( const std::shared_ptr< Edge >& );
+    static std::shared_ptr<Edge> create_edge( const std::shared_ptr<GraphNode>&, const std::shared_ptr<GraphNode>&, float, Direction );
+    void                         add_edge( const std::shared_ptr<Edge>& );
+    void                         remove_edge( const std::shared_ptr<Edge>& );
 
-    std::set< std::shared_ptr< Edge > > get_edges();
-    std::string get_name();
+    std::set<std::shared_ptr<Edge>> get_edges();
+    std::string                     get_name();
 
   private:
-    std::string                         name;
-    std::shared_ptr< Node >             node;
-    std::set< std::shared_ptr< Edge > > edges{};
+    std::string                     name;
+    std::set<std::shared_ptr<Edge>> edges {};
   };
 }
 

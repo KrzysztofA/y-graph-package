@@ -1,7 +1,7 @@
 #ifndef Y_UTILS_STOPWATCH_INL
 #define Y_UTILS_STOPWATCH_INL
 
-#include <chrono>;
+#include <chrono>
 
 namespace yasuzume::utils
 {
@@ -27,11 +27,11 @@ namespace yasuzume::utils
 
   private:
     static std::chrono::high_resolution_clock::time_point start_time;
-    static double last_end_time;
+    static double                                         last_end_time;
   };
 
-  double Stopwatch::last_end_time{ 0 };
-  std::chrono::high_resolution_clock::time_point Stopwatch::start_time{ };
+  double                                         Stopwatch::last_end_time { 0 };
+  std::chrono::high_resolution_clock::time_point Stopwatch::start_time {};
 }
 
 #endif // !Y_UTILS_STOPWATCH_INL

@@ -5,6 +5,12 @@
 #include <functional>
 #include <thread>
 
+#ifdef _DEBUG
+
+#include <iostream>
+
+#endif
+
 /*
  * Header only namespace containing all the sorts used for comparison exercise,
  * also includes std::sort for comparison enclosed in a functor.
@@ -13,7 +19,7 @@ namespace yasuzume::sorts
 {
 #pragma region Defaults
 
-  inline auto standard_determinant{ [] <typename T>( const T & _x, const T & _y ) { return _x < _y; } };
+  inline auto standard_determinant { [] <typename T>( const T& _x, const T& _y ) { return _x < _y; } };
 
 #pragma endregion
 
@@ -54,7 +60,7 @@ namespace yasuzume::sorts
      */
     void print( typename C::iterator _begin, typename C::iterator _end )
     {
-      for( auto i{ _begin }; i != _end; ++i ) std::cout << *i << " ";
+      for( auto i { _begin }; i != _end; ++i ) std::cout << *i << " ";
       std::cout << "\n";
     }
 
@@ -62,7 +68,7 @@ namespace yasuzume::sorts
   };
 
   template< typename C > // Needs to be iterable
-  class Comparison : public Sort< C >
+  class Comparison : public Sort<C>
   {
   public:
     /**
@@ -70,19 +76,19 @@ namespace yasuzume::sorts
      * @param _determinant determinant lambda, condition for the sort
      */
     virtual void set_determinant(
-      std::function< bool( const typename C::value_type&, const typename C::value_type& ) > _determinant )
+      std::function<bool( const typename C::value_type&, const typename C::value_type& )> _determinant )
     {
       determinant_ = std::move( _determinant );
     }
 
   protected:
-    std::function< bool( const typename C::value_type&, const typename C::value_type& ) > determinant_{
+    std::function<bool( const typename C::value_type&, const typename C::value_type& )> determinant_ {
       standard_determinant
     };
   };
 
   template< typename C > // Needs to be iterable
-  class Key : Sort< C >
+  class Key : Sort<C>
   {
   public:
     virtual void set_key( const C& _key )
@@ -91,7 +97,7 @@ namespace yasuzume::sorts
     }
 
   protected:
-    C key{};
+    C key {};
   };
 
 #pragma endregion
@@ -106,7 +112,7 @@ namespace yasuzume::sorts
    * @tparam C iterable container
    */
   template< typename C > // Needs to be iterable
-  class BubbleSort final : public Comparison< C >
+  class BubbleSort final : public Comparison<C>
   {
   public:
     /**
@@ -117,17 +123,17 @@ namespace yasuzume::sorts
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
       was_sorted_ = false; // Checks if container was sorted in this iteration
-      for( auto i{ _begin }; i != _end - 1; ++i )
+      for( auto i { _begin }; i != _end - 1; ++i )
         // Compare container position i with container position i + 1, swap if position i has greater value
         // Mark as sorted this iteration
-        if( Comparison< C >::determinant_( *std::next( i ), *i ) )
+        if( Comparison<C>::determinant_( *std::next( i ), *i ) )
         {
           std::swap( *std::next( i ), *i );
           was_sorted_ = true;
         }
 #ifdef _DEBUG
 
-      Sort< C >::print( _begin, _end );
+      Sort<C>::print( _begin, _end );
 
 #endif
 
@@ -149,7 +155,7 @@ namespace yasuzume::sorts
     }
 
   private:
-    bool was_sorted_{ false };
+    bool was_sorted_ { false };
   };
 
   /**
@@ -158,7 +164,7 @@ namespace yasuzume::sorts
    * @tparam C iterable container
    */
   template< typename C > // Needs to be iterable
-  class BubbleSortNonRecursive final : public Comparison< C >
+  class BubbleSortNonRecursive final : public Comparison<C>
   {
   public:
     /**
@@ -171,17 +177,17 @@ namespace yasuzume::sorts
       do
       {
         was_sorted_ = false;
-        for( auto i{ _begin }; i != _end - 1; ++i )
+        for( auto i { _begin }; i != _end - 1; ++i )
           // Compare container position i with container position i + 1, swap if position i has greater value
           // Mark as sorted this iteration
-          if( Comparison< C >::determinant_( *std::next( i ), *i ) )
+          if( Comparison<C>::determinant_( *std::next( i ), *i ) )
           {
             std::swap( *std::next( i ), *i );
             was_sorted_ = true;
           }
 #ifdef _DEBUG
 
-        Sort< C >::print( _begin, _end );
+        Sort<C>::print( _begin, _end );
 
 #endif
       } while( was_sorted_ );
@@ -197,7 +203,7 @@ namespace yasuzume::sorts
     }
 
   private:
-    bool was_sorted_{ false };
+    bool was_sorted_ { false };
   };
 
   /**
@@ -206,7 +212,7 @@ namespace yasuzume::sorts
    * @tparam C iterable container
    */
   template< typename C > // Needs to be iterable
-  class InsertionSort final : public Comparison< C >
+  class InsertionSort final : public Comparison<C>
   {
   public:
     /**
@@ -216,13 +222,13 @@ namespace yasuzume::sorts
      */
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
-      auto j{ _begin };
-      for( auto i{ _begin }; i != _end; ++i )
+      auto j { _begin };
+      for( auto i { _begin }; i != _end; ++i )
       {
         j = i;
         // Start comparing container at position j with previous positions,
         // as long as the determinant is met
-        while( j != _begin && Comparison< C >::determinant_( *j, *std::prev( j ) ) )
+        while( j != _begin && Comparison<C>::determinant_( *j, *std::prev( j ) ) )
         {
           std::swap( *std::prev( j ), *j );
           --j;
@@ -230,7 +236,7 @@ namespace yasuzume::sorts
 
 #ifdef _DEBUG
 
-        Sort< C >::print( _begin, _end );
+        Sort<C>::print( _begin, _end );
 
 #endif
       }
@@ -252,7 +258,7 @@ namespace yasuzume::sorts
    * @tparam C iterable container
    */
   template< typename C > // Must be iterable
-  class SelectionSort final : public Comparison< C >
+  class SelectionSort final : public Comparison<C>
   {
   public:
     /**
@@ -262,17 +268,17 @@ namespace yasuzume::sorts
      */
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
-      auto k{ _begin };
-      for( auto i{ _begin }; i != _end; ++i )
+      auto k { _begin };
+      for( auto i { _begin }; i != _end; ++i )
       {
         // Look for determinant match in next positioned elements and note the last position determinant matched
-        for( auto j{ std::next( i ) }; j != _end; ++j ) if( Comparison< C >::determinant_( *j, *k ) ) k = j;
+        for( auto j { std::next( i ) }; j != _end; ++j ) if( Comparison<C>::determinant_( *j, *k ) ) k = j;
         // Swap position compared with the position determinant matched last time
         if( k != i ) std::swap( *i, *k );
         k = std::next( i );
 #ifdef _DEBUG
 
-        Sort< C >::print( _begin, _end );
+        Sort<C>::print( _begin, _end );
 
 #endif
       }
@@ -294,7 +300,7 @@ namespace yasuzume::sorts
    * @tparam C iterable container
    */
   template< typename C > // Needs to be iterable
-  class QuickSort final : public Comparison< C >
+  class QuickSort final : public Comparison<C>
   {
   public:
     /**
@@ -308,25 +314,25 @@ namespace yasuzume::sorts
 
 #ifdef _DEBUG
 
-      Sort< C >::print( _begin, _end );
+      Sort<C>::print( _begin, _end );
 
 #endif
 
       auto pivot = *std::next( _begin, std::distance( _begin, _end ) / 2 );
       // Select pivot of the first division
-      auto                                                        first_pivot_loc{
-        std::partition( _begin, _end, [ &pivot, this ]( const auto& x )
+      auto                                                          first_pivot_loc {
+        std::partition( _begin, _end, [ &pivot, this ]( const auto& _x )
                         {
-                          return Comparison< C >::determinant_( x, pivot );
+                          return Comparison<C>::determinant_( _x, pivot );
                         }
         )
       };
 
       // Select pivot of the second division
-      auto                                                                  second_pivot_loc{
+      auto                                                                   second_pivot_loc {
         std::partition( first_pivot_loc, _end, [ &pivot, this ]( const auto& x )
                         {
-                          return !Comparison< C >::determinant_( pivot, x );
+                          return !Comparison<C>::determinant_( pivot, x );
                         }
         )
       };
@@ -336,11 +342,11 @@ namespace yasuzume::sorts
 
     /**
      * @brief sorts over a container using quick sort
-     * @param container container to be sorted
+     * @param _container container to be sorted
      */
-    virtual void operator()( C& container ) override
+    virtual void operator()( C& _container ) override
     {
-      operator()( std::begin( container ), std::end( container ) );
+      operator()( std::begin( _container ), std::end( _container ) );
     }
   };
 
@@ -350,7 +356,7 @@ namespace yasuzume::sorts
    * @tparam C iterable container
    */
   template< typename C > // Needs to be iterable
-  class MergeSort final : public Comparison< C >
+  class MergeSort final : public Comparison<C>
   {
   public:
     /**
@@ -372,7 +378,6 @@ namespace yasuzume::sorts
     {
       operator()( std::begin( _container ), std::end( _container ) );
     }
-
 
     /**
      * @brief divide step of the merge sort, divides the ranges recursively until they are atomic
@@ -396,7 +401,7 @@ namespace yasuzume::sorts
 
 #ifdef _DEBUG
 
-      Sort< C >::print( _begin, _end );
+      Sort<C>::print( _begin, _end );
 
 #endif
     }
@@ -417,14 +422,14 @@ namespace yasuzume::sorts
     {
       // Get all extra iterators - for the middle, for beginning of the range, for middle again and for temporary list
       auto mid = std::next( _begin, std::distance( _begin, _end ) / 2 );
-      auto i{ _begin }, j{ mid };
-      auto z{ std::begin( _temporary_list ) };
+      auto i { _begin }, j { mid };
+      auto z { std::begin( _temporary_list ) };
 
       // Sorting step - takes ranges from the beginning to half and from half to _end. Compare both
       // iterator values and append to temporary list one chosen by determinant, advance chosen one
       while( i != mid && j != _end )
       {
-        if( Comparison< C >::determinant_( *i, *j ) )
+        if( Comparison<C>::determinant_( *i, *j ) )
         {
           *z = *i;
           std::advance( i, 1 );
@@ -450,7 +455,7 @@ namespace yasuzume::sorts
 
   // TODO
   template< typename C > // Iterable container
-  class CountingSort final : Key< C >
+  class CountingSort final : Key<C>
   {
   public:
     virtual void operator()( typename C::iterator begin, typename C::iterator end ) override {}
@@ -463,7 +468,7 @@ namespace yasuzume::sorts
 
   // TODO
   template< typename C > // Iterable container
-  class RadixSort final : Key< C >
+  class RadixSort final : Key<C>
   {
   public:
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override {}
@@ -481,7 +486,7 @@ namespace yasuzume::sorts
 #pragma region Multithreaded_Sorts
 
   template< typename C >
-  class QuickSortAtomic final : Comparison< C >
+  class QuickSortAtomic final : Comparison<C>
   {
   public:
     /**
@@ -495,25 +500,25 @@ namespace yasuzume::sorts
 
 #ifdef _DEBUG
 
-      Sort< C >::print( _begin, _end );
+      Sort<C>::print( _begin, _end );
 
 #endif
 
       auto pivot = *std::next( _begin, std::distance( _begin, _end ) / 2 );
       // Select pivot of the first division
-      auto                                                        first_pivot_loc{
+      auto                                                          first_pivot_loc {
         std::partition( _begin, _end, [ &pivot, this ]( const auto& x )
                         {
-                          return Comparison< C >::determinant_( x, pivot );
+                          return Comparison<C>::determinant_( x, pivot );
                         }
         )
       };
 
       // Select pivot of the second division
-      auto                                                                  second_pivot_loc{
+      auto                                                                   second_pivot_loc {
         std::partition( first_pivot_loc, _end, [ &pivot, this ]( const auto& x )
                         {
-                          return !Comparison< C >::determinant_( pivot, x );
+                          return !Comparison<C>::determinant_( pivot, x );
                         }
         )
       };
@@ -553,12 +558,12 @@ namespace yasuzume::sorts
    * @tparam C container to iterate over
    */
   template< typename C > // Iterable container
-  class StandardLibrarySort final : Comparison< C >
+  class StandardLibrarySort final : Comparison<C>
   {
   public:
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
-      std::sort( _begin, _end, Comparison< C >::determinant_ );
+      std::sort( _begin, _end, Comparison<C>::determinant_ );
     }
 
     virtual void operator()( C& _container ) override
@@ -572,12 +577,12 @@ namespace yasuzume::sorts
    * @tparam C container to iterate over
    */
   template< typename C > // Iterable
-  class StableStandardSort final : Comparison< C >
+  class StableStandardSort final : Comparison<C>
   {
   public:
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
-      std::stable_sort( _begin, _end, Comparison< C >::determinant_ );
+      std::stable_sort( _begin, _end, Comparison<C>::determinant_ );
     }
 
     virtual void operator()( C& _container ) override

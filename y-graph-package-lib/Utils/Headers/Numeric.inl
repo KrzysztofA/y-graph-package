@@ -15,7 +15,7 @@ namespace yasuzume::utils
   template< typename N >
   bool compare_almost( const N& _x, const N& _y )
   {
-    return std::fabs( _x - _y ) < std::numeric_limits< N >::epsilon();
+    return std::fabs( _x - _y ) < std::numeric_limits<N>::epsilon();
   }
 
   /**

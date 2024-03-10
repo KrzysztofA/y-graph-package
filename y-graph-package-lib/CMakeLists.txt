@@ -29,6 +29,7 @@ add_executable (y-graph-package-lib
 				"MinimumSpanningTreeLibrary/Source/Prims.cpp"
 				"MinimumSpanningTreeLibrary/Headers/Boruvka.hpp"
 				"MinimumSpanningTreeLibrary/Source/Boruvka.cpp"
+				"MinimumSpanningTreeLibrary/Tests/MstTest.cpp"
 )
 
 set_property(TARGET y-graph-package-lib PROPERTY CXX_STANDARD 23)

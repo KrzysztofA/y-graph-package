@@ -19,6 +19,7 @@ namespace yasuzume::graph::mst
 
       for( auto j { 0 }; j < std::ssize( s ); j++ )
       {
+        if( i == j ) continue;
         if( explored_indexes.contains( j ) ) continue;
         if( s.at( j ) < shortest_val )
         {

@@ -1,25 +1,27 @@
 #include "../Headers/Kruskals.hpp"
 
-#include "../../SortsLibrary/Sorts.inl"
+#include <algorithm>
+#include <iterator>
 
 typedef std::shared_ptr<yasuzume::graph::GraphNode::Edge> EdgePtr;
 typedef std::shared_ptr<yasuzume::graph::GraphNode> NodePtr;
 
 namespace yasuzume::graph::mst
 {
-  Graph Kruskals::create_minimum_spanning_tree( const Graph& _graph )
+  UndirectedGraph Kruskals::create_minimum_spanning_tree( const UndirectedGraph& _graph )
   {
     // Get edges from the graph
-    std::vector<EdgePtr> edges( _graph.get_edges().size() );
+    std::vector<EdgePtr> edges {};
+    for( auto& i : _graph.get_edges() ) edges.emplace_back( i );
 
     // Sort by weights
     std::ranges::sort( edges.begin(), edges.end(), []( const EdgePtr& _a, const EdgePtr& _b )
     {
-      return _a->get_weight() > _b->get_weight();
+      return _a->get_weight() < _b->get_weight();
     } );
 
     // Construct new graph by applying Kruskal algorithm and create a minimum spanning tree
-    auto minimum_spanning_tree = Graph::create_new_graph_from_nodes( _graph );
+    UndirectedGraph minimum_spanning_tree { Graph::create_new_graph_from_nodes( _graph ) };
 
     // Populate new graph by applying Kruskals algorithm
 
@@ -42,13 +44,18 @@ namespace yasuzume::graph::mst
       }
 
       if( set_with_left != -1 && set_with_right != -1 && set_with_left == set_with_right ) continue;
-      if( set_with_left != -1 && set_with_right != -1 )
+      else if( set_with_left != -1 && set_with_right != -1 )
       {
         explored_connections.at( set_with_left ).merge( explored_connections.at( set_with_right ) );
         explored_connections.erase( explored_connections.begin() + set_with_right );
       }
       else if( set_with_left != -1 ) explored_connections.at( set_with_left ).emplace( i->get_right().lock() );
       else if( set_with_right != -1 ) explored_connections.at( set_with_right ).emplace( i->get_left().lock() );
+      else
+      {
+        std::set temp { i->get_left().lock(), i->get_right().lock() };
+        explored_connections.emplace_back( temp );
+      }
       minimum_spanning_tree.add_edge( i );
     }
 

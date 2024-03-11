@@ -7,7 +7,15 @@ namespace yasuzume::graph::mst
 {
   class Prims final : public MinimumSpanningTreeAlgorithm
   {
-    virtual Graph create_minimum_spanning_tree( const Graph& ) override;
+  public:
+    Prims() = default;
+    Prims( const Prims& ) = default;
+    Prims( Prims&& ) noexcept = default;
+    Prims& operator=( const Prims& ) = default;
+    Prims& operator=( Prims&& ) noexcept = default;
+    virtual ~Prims() noexcept override = default;
+
+    virtual UndirectedGraph create_minimum_spanning_tree( const UndirectedGraph& ) override;
   };
 }
 

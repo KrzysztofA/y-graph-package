@@ -7,7 +7,15 @@ namespace yasuzume::graph::mst
 {
   class Kruskals final : public MinimumSpanningTreeAlgorithm
   {
-    virtual Graph create_minimum_spanning_tree( const Graph& ) override;
+  public:
+    Kruskals() = default;
+    Kruskals( const Kruskals& ) = default;
+    Kruskals( Kruskals&& ) noexcept = default;
+    Kruskals& operator=( const Kruskals& ) = default;
+    Kruskals& operator=( Kruskals&& ) noexcept = default;
+    virtual ~Kruskals() noexcept override = default;
+
+    virtual UndirectedGraph create_minimum_spanning_tree( const UndirectedGraph& ) override;
   };
 }
 

@@ -41,6 +41,7 @@ namespace yasuzume::graph
       [[nodiscard]] bool operator>=( const Edge& ) const;
       [[nodiscard]] bool operator!=( const Edge& ) const;
 
+      [[nodiscard]] std::string           get_stringified() const;
       [[nodiscard]] float                 get_weight() const;
       [[nodiscard]] Direction             get_direction() const;
       [[nodiscard]] std::weak_ptr<GraphNode> get_left() const;

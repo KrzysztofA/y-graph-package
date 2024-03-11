@@ -8,14 +8,14 @@ namespace yasuzume::graph::mst
   class MinimumSpanningTreeAlgorithm
   {
   public:
-    MinimumSpanningTreeAlgorithm();
+    MinimumSpanningTreeAlgorithm() = default;
     MinimumSpanningTreeAlgorithm( const MinimumSpanningTreeAlgorithm& ) = default;
     MinimumSpanningTreeAlgorithm( MinimumSpanningTreeAlgorithm&& ) noexcept = default;
     MinimumSpanningTreeAlgorithm& operator=( const MinimumSpanningTreeAlgorithm& ) = default;
     MinimumSpanningTreeAlgorithm& operator=( MinimumSpanningTreeAlgorithm&& ) noexcept = default;
     virtual ~MinimumSpanningTreeAlgorithm() noexcept = default;
 
-    virtual Graph create_minimum_spanning_tree( const Graph& ) = 0;
+    virtual UndirectedGraph create_minimum_spanning_tree( const UndirectedGraph& ) = 0;
   };
 }
 

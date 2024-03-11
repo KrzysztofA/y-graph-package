@@ -26,25 +26,32 @@ namespace yasuzume::graph
 
     void                                                     add_node( const std::string& );
     [[nodiscard]] std::set<std::shared_ptr<GraphNode::Edge>> get_edges() const;
+    [[nodiscard]] std::vector<std::shared_ptr<GraphNode>>    get_nodes() const;
     void                                                     add_edge( const std::shared_ptr<GraphNode::Edge>& );
-    [[nodiscard]] std::vector<std::vector<float>> get_graph_table_representation() const;
-    [[nodiscard]] float get_total_graph_weight() const;
-
-    void add_undirected_connection( int, int, float );
-    void add_undirected_connection( const std::string&, const std::string&, float );
+    [[nodiscard]] std::vector<std::vector<float>>            get_graph_table_representation() const;
+    [[nodiscard]] float                                      get_total_graph_weight() const;
 
   protected:
-    std::unordered_map<std::string, std::pair<int, std::shared_ptr<GraphNode>>> nodes_set;
-    std::vector<std::shared_ptr<GraphNode>>                                     nodes_vector;
-    std::set<std::shared_ptr<GraphNode::Edge>>                                  edges;
-    std::vector<std::vector<float>>                                             graph_table_representation;
+    std::unordered_map<std::string, std::pair<int, std::shared_ptr<GraphNode>>> nodes_set {};
+    std::vector<std::shared_ptr<GraphNode>>                                     nodes_vector {};
+    std::set<std::shared_ptr<GraphNode::Edge>>                                  edges {};
+    std::vector<std::vector<float>>                                             graph_table_representation { {} };
   };
 
   /**  
    * @brief Graph where all edges are undirected
    */
-  class UndirectedGraph final : Graph
+  class UndirectedGraph final : public Graph
   {
+  public:
+    UndirectedGraph() = default;
+    UndirectedGraph( const UndirectedGraph& ) = default;
+    explicit UndirectedGraph( const Graph& );
+    UndirectedGraph( UndirectedGraph&& ) noexcept = default;
+    UndirectedGraph& operator=( const UndirectedGraph& ) = default;
+    UndirectedGraph& operator=( UndirectedGraph&& ) noexcept = default;
+    virtual          ~UndirectedGraph() override = default;
+
     void add_connection( int, int, float );
     void add_connection( const std::string&, const std::string&, float );
   };

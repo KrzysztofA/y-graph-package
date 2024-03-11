@@ -38,31 +38,38 @@ namespace yasuzume::graph
     }
   }
 
-  void Graph::add_undirected_connection( const int _index_left, const int _index_right, const float _weight )
-  {
-    edges.insert( GraphNode::create_edge( nodes_vector.at( _index_left ), nodes_vector.at( _index_right ), _weight, Undirected ) );
-    if( graph_table_representation.at( _index_left ).at( _index_right ) > _weight )
-    {
-      graph_table_representation.at( _index_left ).at( _index_right ) = _weight;
-      graph_table_representation.at( _index_right ).at( _index_left ) = _weight;
-    }
-  }
-
-  void Graph::add_undirected_connection( const std::string& _name_left, const std::string& _name_right, const float _weight )
-  {
-    edges.insert( GraphNode::create_edge( nodes_set.at( _name_left ).second, nodes_set.at( _name_right ).second, _weight, Undirected ) );
-    const int left_index{ nodes_set.at( _name_left ).first };
-    const int right_index{ nodes_set.at( _name_right ).first };
-    if( graph_table_representation.at( left_index ).at( right_index ) > _weight )
-    {
-      graph_table_representation.at( left_index ).at( right_index ) = _weight;
-      graph_table_representation.at( right_index ).at( left_index ) = _weight;
-    }
-  }
+  // void Graph::add_undirected_connection( const int _index_left, const int _index_right, const float _weight )
+  // {
+  //   edges.insert( GraphNode::create_edge( nodes_vector.at( _index_left ), nodes_vector.at( _index_right ), _weight, Undirected ) );
+  //   if( graph_table_representation.at( _index_left ).at( _index_right ) > _weight )
+  //   {
+  //     graph_table_representation.at( _index_left ).at( _index_right ) = _weight;
+  //     graph_table_representation.at( _index_right ).at( _index_left ) = _weight;
+  //   }
+  // }
+  // 
+  // void Graph::add_undirected_connection( const std::string& _name_left, const std::string& _name_right, const float _weight )
+  // {
+  //   edges.insert( GraphNode::create_edge( nodes_set.at( _name_left ).second, nodes_set.at( _name_right ).second, _weight, Undirected ) );
+  //   const int left_index{ nodes_set.at( _name_left ).first };
+  //   const int right_index{ nodes_set.at( _name_right ).first };
+  //   if( graph_table_representation.at( left_index ).at( right_index ) > _weight )
+  //   {
+  //     graph_table_representation.at( left_index ).at( right_index ) = _weight;
+  //     graph_table_representation.at( right_index ).at( left_index ) = _weight;
+  //   }
+  // }
 
   std::set<std::shared_ptr<GraphNode::Edge>> Graph::get_edges() const
   {
     return edges;
+  }
+
+  std::vector<std::shared_ptr<GraphNode>> Graph::get_nodes() const
+  {
+    std::vector<std::shared_ptr<GraphNode>> return_vector( nodes_vector.size() );
+    std::ranges::copy( nodes_vector.begin(), nodes_vector.end(), return_vector.begin() );
+    return return_vector;
   }
 
   std::vector<std::vector<float>> Graph::get_graph_table_representation() const
@@ -75,6 +82,11 @@ namespace yasuzume::graph
     auto sum { 0.0f };
     for( const auto& i : edges ) sum += i->get_weight();
     return sum;
+  }
+
+  UndirectedGraph::UndirectedGraph( const Graph& _graph )
+  {
+    for( const auto& node : _graph.get_nodes() ) add_node( node->get_name() );
   }
 
   void UndirectedGraph::add_connection( const int _index_left, const int _index_right, const float _weight )

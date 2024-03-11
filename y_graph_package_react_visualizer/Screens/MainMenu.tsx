@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 
-import { StyleSheet, View, Animated } from "react-native";
+import { StyleSheet, View } from "react-native";
 import MenuButton from "../UI/MenuButton";
 
 /**

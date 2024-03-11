@@ -1,6 +1,9 @@
 #include <utility>
 
 #include "../Headers/Nodes.hpp"
+
+#include <sstream>
+
 #include "../Headers/Numeric.inl"
 
 namespace yasuzume::graph
@@ -57,6 +60,26 @@ namespace yasuzume::graph
 #pragma endregion
 
 #pragma region Methods
+
+  std::string GraphNode::Edge::get_stringified() const
+  {
+    std::stringstream sstream{};
+    switch( direction )
+    {
+    case Undirected:
+      sstream << left_node.lock()->get_name() << " < = ";
+      sstream.width( 5 );
+      sstream << weight << " = > " << right_node.lock()->get_name();
+      break;
+    case LeftToRight:
+      sstream << left_node.lock()->get_name() << " = = " << weight << " = > " << right_node.lock()->get_name();
+      break;
+    case RightToLeft:
+      sstream << left_node.lock()->get_name() << " < = " << weight << " = = " << right_node.lock()->get_name();
+      break;
+    }
+    return sstream.str();
+  }
 
   float GraphNode::Edge::get_weight() const
   {

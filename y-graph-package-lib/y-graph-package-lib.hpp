@@ -6,14 +6,19 @@
 
 
 #include <iostream>
-#include <utility>
-#include <vector>
-#include <string>
 #include <memory>
 #include <ranges>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "SortsLibrary/Sorts.inl"
 #include "Utils/Headers/Stopwatch.inl"
+
+#include "MinimumSpanningTreeLibrary/Headers/Kruskals.hpp"
+#include "MinimumSpanningTreeLibrary/Headers/Prims.hpp"
+#include "Utils/Headers/Graphs.hpp"
+
 
 // TODO: Reference additional headers your program requires here.
 

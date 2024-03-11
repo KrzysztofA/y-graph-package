@@ -2,8 +2,8 @@
 
 namespace yasuzume::graph::mst
 {
-  Graph Boruvka::create_minimum_spanning_tree( const Graph& )
+  UndirectedGraph Boruvka::create_minimum_spanning_tree( const UndirectedGraph& )
   {
-    return Graph {};
+    return UndirectedGraph {};
   }
 }

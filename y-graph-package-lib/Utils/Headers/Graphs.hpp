@@ -30,12 +30,15 @@ namespace yasuzume::graph
     void                                                     add_edge( const std::shared_ptr<GraphNode::Edge>& );
     [[nodiscard]] std::vector<std::vector<float>>            get_graph_table_representation() const;
     [[nodiscard]] float                                      get_total_graph_weight() const;
+    [[nodiscard]] std::string                                get_graph_table_stringified() const;
+    void                                                     manually_override_longest_node_name( const long long& );
 
   protected:
     std::unordered_map<std::string, std::pair<int, std::shared_ptr<GraphNode>>> nodes_set {};
     std::vector<std::shared_ptr<GraphNode>>                                     nodes_vector {};
     std::set<std::shared_ptr<GraphNode::Edge>>                                  edges {};
     std::vector<std::vector<float>>                                             graph_table_representation { {} };
+    long long                                                                   longest_node_name { 3 };
   };
 
   /**  

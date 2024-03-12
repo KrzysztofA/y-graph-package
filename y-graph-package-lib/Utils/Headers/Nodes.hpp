@@ -41,13 +41,13 @@ namespace yasuzume::graph
       [[nodiscard]] bool operator>=( const Edge& ) const;
       [[nodiscard]] bool operator!=( const Edge& ) const;
 
-      [[nodiscard]] std::string           get_stringified() const;
-      [[nodiscard]] float                 get_weight() const;
-      [[nodiscard]] Direction             get_direction() const;
+      [[nodiscard]] std::string             get_stringified() const;
+      [[nodiscard]] float                    get_weight() const;
+      [[nodiscard]] Direction                get_direction() const;
       [[nodiscard]] std::weak_ptr<GraphNode> get_left() const;
       [[nodiscard]] std::weak_ptr<GraphNode> get_right() const;
-      void                                set_direction( Direction );
-      void                                set_weight( float );
+      void                                   set_direction( Direction );
+      void                                   set_weight( float );
 
     private:
       float                 weight = 0;

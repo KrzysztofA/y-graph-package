@@ -1,9 +1,22 @@
 import React from "react";
 
-import { View, Pressable, StyleSheet, Text, Animated } from "react-native";
+import {
+  View,
+  Pressable,
+  StyleSheet,
+  Text,
+  Animated,
+  GestureResponderEvent,
+} from "react-native";
 import useMenuButtonHighlight from "./useMenuButtonHighlight";
 
-const MenuButton = ({ title }: { title: string }): React.JSX.Element => {
+const MenuButton = ({
+  title,
+  onPress,
+}: {
+  title: string;
+  onPress?: (event: GestureResponderEvent) => void;
+}): React.JSX.Element => {
   const [
     backgroundHighlightStyle,
     opacityHighlightStyle,
@@ -19,6 +32,7 @@ const MenuButton = ({ title }: { title: string }): React.JSX.Element => {
         backgroundHighlightStyle,
       ]}>
       <Pressable
+        onPress={onPress ? onPress : null}
         onFocus={() => {
           activateHighlightSource(1);
         }}

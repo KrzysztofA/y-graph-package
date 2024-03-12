@@ -44,7 +44,7 @@ namespace yasuzume::graph::mst
       }
 
       if( set_with_left != -1 && set_with_right != -1 && set_with_left == set_with_right ) continue;
-      else if( set_with_left != -1 && set_with_right != -1 )
+      if( set_with_left != -1 && set_with_right != -1 )
       {
         explored_connections.at( set_with_left ).merge( explored_connections.at( set_with_right ) );
         explored_connections.erase( explored_connections.begin() + set_with_right );

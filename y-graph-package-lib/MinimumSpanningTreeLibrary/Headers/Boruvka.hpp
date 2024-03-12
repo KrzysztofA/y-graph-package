@@ -7,6 +7,14 @@ namespace yasuzume::graph::mst
 {
   class Boruvka final : public MinimumSpanningTreeAlgorithm
   {
+  public:
+    Boruvka() = default;
+    Boruvka( const Boruvka& ) = default;
+    Boruvka( Boruvka&& ) noexcept = default;
+    Boruvka& operator=( const Boruvka& ) = default;
+    Boruvka& operator=( Boruvka&& ) noexcept = default;
+    virtual ~Boruvka() noexcept override = default;
+
     virtual UndirectedGraph create_minimum_spanning_tree( const UndirectedGraph& ) override;
   };
 }

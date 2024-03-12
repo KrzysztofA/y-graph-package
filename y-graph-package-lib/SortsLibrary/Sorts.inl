@@ -330,9 +330,9 @@ namespace yasuzume::sorts
 
       // Select pivot of the second division
       auto                                                                   second_pivot_loc {
-        std::partition( first_pivot_loc, _end, [ &pivot, this ]( const auto& x )
+        std::partition( first_pivot_loc, _end, [ &pivot, this ]( const auto& _x )
                         {
-                          return !Comparison<C>::determinant_( pivot, x );
+                          return !Comparison<C>::determinant_( pivot, _x );
                         }
         )
       };
@@ -458,11 +458,11 @@ namespace yasuzume::sorts
   class CountingSort final : Key<C>
   {
   public:
-    virtual void operator()( typename C::iterator begin, typename C::iterator end ) override {}
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override {}
 
-    virtual void operator()( C& container ) override
+    virtual void operator()( C& _container ) override
     {
-      operator()( std::begin( container ), std::end( container ) );
+      operator()( std::begin( _container ), std::end( _container ) );
     }
   };
 
@@ -507,18 +507,18 @@ namespace yasuzume::sorts
       auto pivot = *std::next( _begin, std::distance( _begin, _end ) / 2 );
       // Select pivot of the first division
       auto                                                          first_pivot_loc {
-        std::partition( _begin, _end, [ &pivot, this ]( const auto& x )
+        std::partition( _begin, _end, [ &pivot, this ]( const auto& _x )
                         {
-                          return Comparison<C>::determinant_( x, pivot );
+                          return Comparison<C>::determinant_( _x, pivot );
                         }
         )
       };
 
       // Select pivot of the second division
       auto                                                                   second_pivot_loc {
-        std::partition( first_pivot_loc, _end, [ &pivot, this ]( const auto& x )
+        std::partition( first_pivot_loc, _end, [ &pivot, this ]( const auto& _x )
                         {
-                          return !Comparison<C>::determinant_( pivot, x );
+                          return !Comparison<C>::determinant_( pivot, _x );
                         }
         )
       };
@@ -539,9 +539,9 @@ namespace yasuzume::sorts
       operator()( std::begin( _container ), std::end( _container ) );
     }
 
-    void sort( typename C::iterator begin, typename C::iterator end )
+    void sort( typename C::iterator _begin, typename C::iterator _end )
     {
-      operator()( begin, end );
+      operator()( _begin, _end );
     }
   };
 

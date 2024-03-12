@@ -1,7 +1,9 @@
 #include "../Headers/Graphs.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
+#include <sstream>
 
 namespace yasuzume::graph
 {
@@ -17,6 +19,7 @@ namespace yasuzume::graph
     auto node { std::make_shared<GraphNode>( _name ) };
     if( !nodes_set.contains( _name ) )
     {
+      if( std::ssize( _name ) > longest_node_name ) longest_node_name = std::ssize( _name );
       nodes_vector.emplace_back( node );
       nodes_set.emplace( _name, std::make_pair( nodes_vector.size() - 1, node ) );
       for( auto& i : graph_table_representation ) i.emplace_back( INFINITY );
@@ -38,27 +41,37 @@ namespace yasuzume::graph
     }
   }
 
-  // void Graph::add_undirected_connection( const int _index_left, const int _index_right, const float _weight )
-  // {
-  //   edges.insert( GraphNode::create_edge( nodes_vector.at( _index_left ), nodes_vector.at( _index_right ), _weight, Undirected ) );
-  //   if( graph_table_representation.at( _index_left ).at( _index_right ) > _weight )
-  //   {
-  //     graph_table_representation.at( _index_left ).at( _index_right ) = _weight;
-  //     graph_table_representation.at( _index_right ).at( _index_left ) = _weight;
-  //   }
-  // }
-  // 
-  // void Graph::add_undirected_connection( const std::string& _name_left, const std::string& _name_right, const float _weight )
-  // {
-  //   edges.insert( GraphNode::create_edge( nodes_set.at( _name_left ).second, nodes_set.at( _name_right ).second, _weight, Undirected ) );
-  //   const int left_index{ nodes_set.at( _name_left ).first };
-  //   const int right_index{ nodes_set.at( _name_right ).first };
-  //   if( graph_table_representation.at( left_index ).at( right_index ) > _weight )
-  //   {
-  //     graph_table_representation.at( left_index ).at( right_index ) = _weight;
-  //     graph_table_representation.at( right_index ).at( left_index ) = _weight;
-  //   }
-  // }
+  std::string Graph::get_graph_table_stringified() const
+  {
+    std::stringstream sstream {};
+    sstream.width( longest_node_name );
+    sstream << " " << " ";
+    for( const auto& i : get_nodes() )
+    {
+      sstream.width( longest_node_name );
+      sstream << i->get_name() << " | ";
+    }
+    sstream << "\n";
+
+    for( auto i { 0 }; i < std::ssize( graph_table_representation ) && i < std::ssize( get_nodes() ); i++ )
+    {
+      sstream.width( longest_node_name );
+      sstream << get_nodes().at( i )->get_name() << " ";
+      for( const auto& j : graph_table_representation.at( i ) )
+      {
+        sstream.width( longest_node_name );
+        sstream << j << " | ";
+      }
+      sstream << "\n";
+    }
+
+    return sstream.str();
+  }
+
+  void Graph::manually_override_longest_node_name( const long long& _new_longest )
+  {
+    longest_node_name = _new_longest;
+  }
 
   std::set<std::shared_ptr<GraphNode::Edge>> Graph::get_edges() const
   {

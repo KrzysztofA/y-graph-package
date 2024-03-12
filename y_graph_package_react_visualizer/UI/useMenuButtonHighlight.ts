@@ -17,8 +17,7 @@ const [animation, setAnimation] = useState(new Animated.Value(0));
       outputRange: ["0.8", "1"],
     }),
   };
-  const [highlight, activateHighlightSource, deactivateHighlightSource] =
-    useMultiSourceCondition(2);
+  const [highlight, activateHighlightSource, deactivateHighlightSource] = useMultiSourceCondition(2);
   const highlightAnimation = useMemo(
     () =>
       Animated.timing(animation, {

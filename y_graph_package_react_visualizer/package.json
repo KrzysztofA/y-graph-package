@@ -11,9 +11,10 @@
     "windows": "react-native run-windows"
   },
   "dependencies": {
+    "konva": "^9.3.6",
     "react": "18.2.0",
+    "react-konva": "^18.2.10",
     "react-native": "0.73.5",
-    "react-native-canvas": "^0.1.39",
     "react-native-windows": "0.73.9"
   },
   "devDependencies": {

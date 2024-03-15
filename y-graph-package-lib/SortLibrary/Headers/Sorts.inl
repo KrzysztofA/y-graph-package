@@ -7,7 +7,7 @@
 
 #ifdef _DEBUG
 
-#include <iostream>
+#include <print>
 
 #endif
 
@@ -60,8 +60,8 @@ namespace yasuzume::sorts
      */
     void print( typename C::iterator _begin, typename C::iterator _end )
     {
-      for( auto i { _begin }; i != _end; ++i ) std::cout << *i << " ";
-      std::cout << "\n";
+      for( auto i { _begin }; i != _end; ++i ) std::print( "{} ", *i );
+      std::println( "" );
     }
 
 #endif

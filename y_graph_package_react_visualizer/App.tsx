@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import MainMenu from './Screens/MainMenu';
-import {StyleSheet, View} from 'react-native';
+import MainMenu from "./Screens/MainMenu";
+import { StyleSheet, View } from "react-native";
 
 function App(): React.JSX.Element {
   return (
@@ -14,7 +14,7 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   mainView: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
 });
 

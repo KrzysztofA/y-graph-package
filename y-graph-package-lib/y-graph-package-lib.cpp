@@ -6,7 +6,7 @@
 template< typename T >
 void print_container( const T& );
 
-constexpr void println( const int& = 1 );
+constexpr void breakln( const int& = 1 );
 
 typedef std::vector<int>::iterator vector_iterator;
 
@@ -49,7 +49,7 @@ int main()
   bubble_sort( std::begin( test_container ), std::end( test_container ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container );
-  println();
+  breakln();
 
   std::println( "INSERTION SORT\n" );
   print_container( test_container2 );
@@ -57,7 +57,7 @@ int main()
   insertion_sort( std::begin( test_container2 ), std::end( test_container2 ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container2 );
-  println();
+  breakln();
 
   std::println( "SELECTION SORT\n" );
   print_container( test_container3 );
@@ -65,7 +65,7 @@ int main()
   selection_sort( std::begin( test_container3 ), std::end( test_container3 ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container3 );
-  println();
+  breakln();
 
   std::println( "QUICK SORT\n" );
   print_container( test_container4 );
@@ -73,7 +73,7 @@ int main()
   quick_sort( std::begin( test_container4 ), std::end( test_container4 ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container4 );
-  println();
+  breakln();
 
   std::println( "MERGE SORT\n" );
   print_container( test_container5 );
@@ -81,7 +81,7 @@ int main()
   merge_sort( std::begin( test_container5 ), std::end( test_container5 ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container5 );
-  println();
+  breakln();
 
   std::println( "STD::SORT\n" );
   print_container( test_container6 );
@@ -89,7 +89,7 @@ int main()
   std_sort( std::begin( test_container6 ), std::end( test_container6 ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container6 );
-  println();
+  breakln();
 
   std::println( "STD::STABLE SORT\n" );
   print_container( test_container7 );
@@ -97,7 +97,7 @@ int main()
   std_stable( std::begin( test_container7 ), std::end( test_container7 ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container7 );
-  println();
+  breakln();
 
 
   std::println( "QUICK SORT ATOMIC\n" );
@@ -106,7 +106,7 @@ int main()
   quick_sort_atomic( std::begin( test_container8 ), std::end( test_container8 ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container8 );
-  println();
+  breakln();
 
   yasuzume::graph::UndirectedGraph new_graph {};
   yasuzume::graph::mst::Kruskals kruskals {};
@@ -142,17 +142,17 @@ int main()
 
   std::println( "Original Graph:" );
   for( const auto& edge : new_graph.get_edges() ) std::println( "{}", edge->get_stringified() );
-  println( 2 );
+  breakln( 2 );
 
   std::println( "{}", new_graph.get_graph_table_stringified() );
-  println();
+  breakln();
 
   Stopwatch::start();
   auto new_graph_mst_kruskals { kruskals.create_minimum_spanning_tree( new_graph ) };
   Stopwatch::end();
   std::println( "With Kruskal's ({}):", Stopwatch::last_record() );
   for( const auto& edge : new_graph_mst_kruskals.get_edges() ) std::println( "{}", edge->get_stringified() );
-  println( 2 );
+  breakln( 2 );
 
   std::println( "{}", new_graph_mst_kruskals.get_graph_table_stringified() );
 
@@ -161,7 +161,7 @@ int main()
   Stopwatch::end();
   std::println( "With Prims's ({}):", Stopwatch::last_record() );
   for( const auto& edge : new_graph_mst_prims.get_edges() ) std::println( "{}", edge->get_stringified() );
-  println( 2 );
+  breakln( 2 );
 
   std::println( "{}", new_graph_mst_prims.get_graph_table_stringified() );
 
@@ -170,7 +170,7 @@ int main()
   Stopwatch::end();
   std::println( "With Boruvka's ({}):", Stopwatch::last_record() );
   for( const auto& edge : new_graph_mst_boruvka.get_edges() ) std::println( "{}", edge->get_stringified() );
-  println( 2 );
+  breakln( 2 );
 
   std::println( "{}", new_graph_mst_boruvka.get_graph_table_stringified() );
 
@@ -178,7 +178,7 @@ int main()
   return 0;
 }
 
-constexpr void println( const int& _lines )
+constexpr void breakln( const int& _lines )
 {
   for( auto i { 0 }; i < _lines; i++ ) std::println( "" );
 }

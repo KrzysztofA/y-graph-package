@@ -27,13 +27,13 @@ add_executable (y-graph-package-lib
 				${UTILS_LIBRARY_HEADERS}
 				${MST_LIBRARY_SOURCE}
 				${MST_LIBRARY_HEADERS}
-				"SortsLibrary/Sorts.inl"
+				"SortLibrary/Headers/Sorts.inl"
 				
 )
 
 include_directories("MinimumSpanningTreeLibrary/Headers")
 include_directories("Utils/Headers")
-include_directories("SortsLibrary")
+include_directories("SortLibrary/Headers")
 
 set_property(TARGET y-graph-package-lib PROPERTY CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

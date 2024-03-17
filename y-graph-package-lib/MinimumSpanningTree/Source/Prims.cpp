@@ -8,7 +8,7 @@ namespace yasuzume::graph::mst
 
     const auto distance_matrix { _graph.get_graph_table_representation() };
     UndirectedGraph minimum_spanning_tree { UndirectedGraph::create_new_graph_from_nodes( _graph ) };
-    std::set<int> explored_indexes { 0 };
+    std::set explored_indexes { 0 };
 
     while( std::ssize( explored_indexes ) < std::ssize( minimum_spanning_tree.get_nodes() ) )
     {

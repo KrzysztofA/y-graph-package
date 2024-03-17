@@ -9,10 +9,15 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-project ("y-graph-package-lib-mst" VERSION 0.5.3)
+project ("y-graph-package-lib-mst" VERSION 0.6.0)
+
+file(GLOB UTILS_LIBRARY_HEADERS "../Utils/Headers/*")
+file(GLOB UTILS_LIBRARY_SOURCE "../Utils/Source/*")
 
 # Add source to this project's executable.
-add_library (y-graph-package-lib-mst STATIC
+add_executable (y-graph-package-lib-mst
+				"y-graph-package-lib-mst.cpp"
+				"y-graph-package-lib-mst.hpp"
 				"Headers/MinimumSpanningTreeAlgorithm.inl"
 				"Headers/Kruskals.hpp"
 				"Source/Kruskals.cpp"
@@ -22,8 +27,12 @@ add_library (y-graph-package-lib-mst STATIC
 				"Source/Boruvka.cpp"
 				"Headers/ReverseDelete.hpp"
 				"Source/ReverseDelete.cpp"
+				${UTILS_LIBRARY_SOURCE}
+				${UTILS_LIBRARY_HEADERS}
 )
 
+include_directories("../Utils/Headers")
+include_directories("Headers")
 
 set_property(TARGET y-graph-package-lib-mst PROPERTY CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -1,0 +1,29 @@
+# CMakeList.txt : CMake project for y-graph-package, include source and define
+# project specific logic here.
+#
+cmake_minimum_required (VERSION 3.28)
+
+# Enable Hot Reload for MSVC compilers if supported.
+if (POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
+
+project ("y-graph-package-lib-sorts" VERSION 1.0.0)
+
+file(GLOB UTILS_LIBRARY_HEADERS "../Utils/Headers/*")
+file(GLOB UTILS_LIBRARY_SOURCE "../Utils/Source/*")
+
+add_executable (y-graph-package-lib-sorts
+				"y-graph-package-lib-sorts.cpp"
+				"y-graph-package-lib-sorts.hpp"
+				"Headers/Sorts.inl"
+				${UTILS_LIBRARY_SOURCE}
+				${UTILS_LIBRARY_HEADERS}
+)
+
+include_directories("../Utils/Headers")
+include_directories("Headers")
+
+set_property(TARGET y-graph-package-lib-sorts PROPERTY CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)

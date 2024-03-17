@@ -4,9 +4,11 @@
 #include <algorithm>
 #include <functional>
 #include <LinkedList.inl>
+#include <map>
 #include <thread>
 #include <unordered_set>
-
+#include <valarray>
+#include <ValidValue.inl>
 
 #ifdef _DEBUG
 
@@ -517,37 +519,21 @@ namespace yasuzume::sorts
       operator()( _begin, _end, max_val );
     }
 
-    template< typename T >
-    struct Pair
-    {
-      Pair(): first(), second( false ) {}
-      explicit Pair( T _val ) : first( _val ), second( false ) {}
-      explicit Pair( T _val, const bool& _bool ) : first( _val ), second( _bool ) {}
-      Pair( const Pair& ) = default;
-      Pair( Pair&& ) noexcept = default;
-      Pair& operator=( const Pair& ) = default;
-      Pair& operator=( Pair&& ) noexcept = default;
-      ~Pair() noexcept = default;
-
-      T    first;
-      bool second;
-    };
-
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end, const size_t& _max_val ) override
     {
-      std::vector<utils::LinkedList<Pair<typename C::value_type>>*> temp_vector;
+      std::vector<utils::LinkedList<utils::ValidValue<typename C::value_type>>*> temp_vector;
       temp_vector.reserve( ( _max_val + 1 ) );
-      for( size_t i { 0 }; i <= _max_val; i++ ) temp_vector.emplace_back( new utils::LinkedList<Pair<typename C::value_type>>() );
+      for( size_t i { 0 }; i <= _max_val; i++ ) temp_vector.emplace_back( new utils::LinkedList<utils::ValidValue<typename C::value_type>>() );
       for( auto i { _begin }; i != _end; ++i )
       {
         auto                                             key_val { this->key( *i ) };
-        utils::LinkedList<Pair<typename C::value_type>>* place { temp_vector.at( key_val ) };
+        utils::LinkedList<utils::ValidValue<typename C::value_type>>* place { temp_vector.at( key_val ) };
         while( place->value.second && place->next != nullptr ) place = place->next;
-        if( place->next == nullptr ) place->next = new utils::LinkedList<Pair<typename C::value_type>>( Pair<typename C::value_type>( *i, true ) );
-        else place->value = Pair( *i, true );
+        if( place->next == nullptr ) place->next = new utils::LinkedList<utils::ValidValue<typename C::value_type>>( utils::ValidValue<typename C::value_type>( *i, true ) );
+        else place->value = utils::ValidValue( *i, true );
       }
       auto                                             j { std::begin( temp_vector ) };
-      utils::LinkedList<Pair<typename C::value_type>>* k { *j };
+      utils::LinkedList<utils::ValidValue<typename C::value_type>>* k { *j };
       for( auto i { _begin }; i != _end && j != std::end( temp_vector ); )
       {
         if( k->value.second )
@@ -576,7 +562,11 @@ namespace yasuzume::sorts
     }
   };
 
-  // TODO
+  /**
+   * @brief Counting Sort can sort elements by creating new elements in their stead, sorted. Initially it counts each element occurence, and hashes elements into vector,
+   * then it attempts to rebuild elements from the hash
+   * @tparam C iterable container
+   */
   template< std::ranges::range C > // Iterable container
   class CountingSort final : ReversibleKey<C>
   {
@@ -585,7 +575,7 @@ namespace yasuzume::sorts
 
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
-      size_t max_val{ 0 };
+      size_t max_val { 0 };
       for( auto i { _begin }; i != _end; ++i ) if( this->key( *i ) > max_val ) max_val = *i; // Get Maximum Value
       operator()( _begin, _end, max_val );
     }
@@ -604,7 +594,7 @@ namespace yasuzume::sorts
       }
 
       size_t j { 0 };
-      for( auto i{ _begin }; i != _end; ++i, ++j )
+      for( auto i { _begin }; i != _end; ++i, ++j )
       {
         *i = result_vector.at( j );
 #ifdef _DEBUG
@@ -621,16 +611,49 @@ namespace yasuzume::sorts
     }
   };
 
+  /**
+   * @brief 
+   * @tparam C 
+   */
   // TODO
   template< std::ranges::range C > // Iterable container
-  class RadixSort final : ReversibleKey<C>
+  class RadixSort final : Key<C>
   {
   public:
     explicit RadixSort( const std::function<size_t( const typename C::value_type& )>& _key, const std::function<typename C::value_type( const size_t )> _builder ) : ReversibleKey<C>( _key, _builder ) {}
 
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
-      
+      size_t max_val { 0 };
+      for( auto i { _begin }; i != _end; ++i ) if( this->key( *i ) > max_val ) max_val = *i; // Get Maximum Value
+      operator()( _begin, _end, max_val );
+    }
+
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end, const size_t& _buckets_size ) override
+    {
+      /*
+      std::vector<size_t> hash_vector {};
+      hash_vector.reserve( std::distance( _begin, _end ) );
+      for( auto i { _begin }; i != _end; ++i ) hash_vector.emplace_back( this->key( *i ), *i );
+      std::vector<std::map<int, std::vector<size_t>>> buckets_map;
+
+      for( auto i { 0 }; i < _buckets_size; i++ )
+      {
+        std::vector<size_t> temp;
+        buckets_map.emplace( i, temp );
+      }
+
+      auto current_bucket_begin { hash_vector.begin() };
+      auto current_bucket_end { hash_vector.end() };
+
+      for( auto i { -1 }; i < _buckets_size; )
+      {
+        for( auto j { current_bucket_begin }; j != current_bucket_end; ++j ) buckets_map.at( *j % static_cast<size_t>( std::pow( 10, _buckets_size - ( i + 1 ) ) ) ).push_back( *j );
+        ++i;
+        current_bucket_begin = buckets_map.at( i ).begin();
+        current_bucket_end = buckets_map.at( i ).end();
+      }
+      */
     }
 
     virtual void operator()( C& _container ) override

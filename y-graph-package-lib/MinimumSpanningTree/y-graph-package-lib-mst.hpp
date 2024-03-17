@@ -1,12 +1,7 @@
-﻿#ifndef Y_GRAPH_PACKAGE_LIB_HPP
+#ifndef Y_GRAPH_PACKAGE_LIB_HPP
 #define Y_GRAPH_PACKAGE_LIB_HPP
 
-#include <iostream>
-#include <memory>
 #include <print>
-#include <ranges>
-#include <string>
-#include <utility>
 #include <vector>
 
 #include <Graphs.hpp>

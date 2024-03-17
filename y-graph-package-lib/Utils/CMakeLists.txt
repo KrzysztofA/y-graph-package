@@ -19,6 +19,7 @@ add_executable (y-graph-package-lib-utils
 				"Source/Nodes.cpp"
 				"Headers/Graphs.hpp"
 				"Source/Graphs.cpp"
+				"Headers/LinkedList.inl"
 )
 
 set_property(TARGET y-graph-package-lib-utils PROPERTY CXX_STANDARD 26)

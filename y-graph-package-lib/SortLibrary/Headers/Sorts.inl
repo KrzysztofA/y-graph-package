@@ -3,7 +3,10 @@
 
 #include <algorithm>
 #include <functional>
+#include <LinkedList.inl>
 #include <thread>
+#include <unordered_set>
+
 
 #ifdef _DEBUG
 
@@ -25,7 +28,7 @@ namespace yasuzume::sorts
 
 #pragma region Bases
 
-  template< typename C > // Needs to be iterable
+  template< std::ranges::range C > // Needs to be iterable
   class Sort
   {
   public:
@@ -67,7 +70,7 @@ namespace yasuzume::sorts
 #endif
   };
 
-  template< typename C > // Needs to be iterable
+  template< std::ranges::range C > // Needs to be iterable
   class Comparison : public Sort<C>
   {
   public:
@@ -87,17 +90,37 @@ namespace yasuzume::sorts
     };
   };
 
-  template< typename C > // Needs to be iterable
-  class Key : Sort<C>
+  template< typename T >
+  concept Hashable = requires( T _a )
+  {
+    { std::hash<T> {}( _a ) } -> std::convertible_to<std::size_t>;
+  };
+
+  template< typename C, typename T >
+  concept HashableRange = requires( C _c )
+  {
+    { std::hash<T> {}( std::begin( _c ) ) } -> std::convertible_to<std::size_t>;
+    { std::hash<T> {}( std::end( _c ) ) } -> std::convertible_to<std::size_t>;
+  };
+
+  template< std::ranges::range C > // C needs to be a range of T
+  class Key : public Sort<C>
   {
   public:
-    virtual void set_key( const C& _key )
+    explicit Key( std::function<size_t( const typename C::value_type& )> _key ) : key( std::move( _key ) ) {}
+
+    /**
+     * @brief Change key to a custom one
+     * @param _key determinant key, condition for the placement in the vector
+     */
+    virtual void set_key(
+      std::function<size_t( const typename C::value_type& )> _key )
     {
-      key = _key;
+      key = std::move( _key );
     }
 
   protected:
-    C key {};
+    std::function<size_t( const typename C::value_type& )> key {};
   };
 
 #pragma endregion
@@ -111,7 +134,7 @@ namespace yasuzume::sorts
    * determinant is met, if at least one swap occurred during iteration, recursive call is made
    * @tparam C iterable container
    */
-  template< typename C > // Needs to be iterable
+  template< std::ranges::range C > // Needs to be iterable
   class BubbleSort final : public Comparison<C>
   {
   public:
@@ -163,7 +186,7 @@ namespace yasuzume::sorts
    * determinant is met, if at least one swap occurred during iteration, the loop repeats
    * @tparam C iterable container
    */
-  template< typename C > // Needs to be iterable
+  template< std::ranges::range C > // Needs to be iterable
   class BubbleSortNonRecursive final : public Comparison<C>
   {
   public:
@@ -257,7 +280,7 @@ namespace yasuzume::sorts
    * the positions of selected item and the item the determinant was met for the last time
    * @tparam C iterable container
    */
-  template< typename C > // Must be iterable
+  template< std::ranges::range C > // Must be iterable
   class SelectionSort final : public Comparison<C>
   {
   public:
@@ -299,7 +322,7 @@ namespace yasuzume::sorts
    * until the pivot is sorted. Sort is multi-thread safe, but this is its single-thread implementation.
    * @tparam C iterable container
    */
-  template< typename C > // Needs to be iterable
+  template< std::ranges::range C > // Needs to be iterable
   class QuickSort final : public Comparison<C>
   {
   public:
@@ -355,7 +378,7 @@ namespace yasuzume::sorts
    * these items are compared and merged together until the array is fully sorted.
    * @tparam C iterable container
    */
-  template< typename C > // Needs to be iterable
+  template< std::ranges::range C > // Needs to be iterable
   class MergeSort final : public Comparison<C>
   {
   public:
@@ -453,12 +476,75 @@ namespace yasuzume::sorts
 
 #pragma endregion
 
-  // TODO
-  template< typename C > // Iterable container
-  class CountingSort final : Key<C>
+  /**
+   * @brief Hash Sort is not an in place sort, it creates an additional vector using hashed values for items, then it replaces old values with new values
+   * @tparam C iterable container
+   */
+  template< std::ranges::range C > // Iterable container
+  class HashSort final : Key<C>
   {
   public:
-    virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override {}
+    explicit HashSort( const std::function<size_t( const typename C::value_type& )>& _key ): Key<C>( _key ) {}
+
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
+    {
+      size_t max_val { 0 };
+      for( auto i { _begin }; i != _end; ++i ) if( this->key( *i ) > max_val ) max_val = *i; // Get Maximum Value
+      operator()( _begin, _end, max_val );
+    }
+
+    template< typename T >
+    struct Pair
+    {
+      Pair(): second( false ) {}
+      explicit Pair( T _val ) : first( _val ), second( false ) {}
+      explicit Pair( T _val, const bool& _bool ) : first( _val ), second( _bool ) {}
+      Pair( const Pair& ) = default;
+      Pair( Pair&& ) noexcept = default;
+      Pair& operator=( const Pair& ) = default;
+      Pair& operator=( Pair&& ) noexcept = default;
+      ~Pair() noexcept = default;
+
+      T    first;
+      bool second;
+    };
+
+    void operator()( typename C::iterator _begin, typename C::iterator _end, const size_t& _max_val )
+    {
+      std::vector<utils::LinkedList<Pair<typename C::value_type>>*> temp_vector;
+      temp_vector.reserve( ( _max_val + 1 ) );
+      for( size_t i { 0 }; i <= _max_val; i++ ) temp_vector.emplace_back( new utils::LinkedList<Pair<typename C::value_type>>() );
+      for( auto i { _begin }; i != _end; ++i )
+      {
+        auto                                             key_val { this->key( *i ) };
+        utils::LinkedList<Pair<typename C::value_type>>* place { temp_vector.at( key_val ) };
+        while( place->value.second && place->next != nullptr ) place = place->next;
+        if( place->next == nullptr ) place->next = new utils::LinkedList<Pair<typename C::value_type>>( Pair<typename C::value_type>( *i, true ) );
+        else place->value = Pair( *i, true );
+      }
+      auto                                             j { std::begin( temp_vector ) };
+      utils::LinkedList<Pair<typename C::value_type>>* k { *j };
+      for( auto i { _begin }; i != _end && j != std::end( temp_vector ); )
+      {
+        if( k->value.second )
+        {
+          *i = k->value.first;
+          ++i;
+
+#ifdef _DEBUG
+
+          Sort<C>::print( _begin, _end );
+
+#endif
+        }
+        if( k->next == nullptr )
+        {
+          ++j;
+          if( j != std::end( temp_vector ) ) k = *j;
+        }
+        else k = k->next;
+      }
+    }
 
     virtual void operator()( C& _container ) override
     {
@@ -467,25 +553,25 @@ namespace yasuzume::sorts
   };
 
   // TODO
-  template< typename C > // Iterable container
+  template< std::ranges::range C, Hashable T > // Iterable container
   class RadixSort final : Key<C>
   {
   public:
+    explicit RadixSort( const std::function<size_t( const typename C::value_type& )>& _key ) : Key<C>( _key ) {}
+
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override {}
 
     virtual void operator()( C& _container ) override
     {
       operator()( std::begin( _container ), std::end( _container ) );
     }
-
-  private:
   };
 
 #pragma endregion
 
 #pragma region Multithreaded_Sorts
 
-  template< typename C >
+  template< std::ranges::range C >
   class QuickSortAtomic final : Comparison<C>
   {
   public:
@@ -557,7 +643,7 @@ namespace yasuzume::sorts
    * @brief Standard library sort, usually implemented as intro sort, provides fast execution times. Here wrapped as functor.
    * @tparam C container to iterate over
    */
-  template< typename C > // Iterable container
+  template< std::ranges::range C > // Iterable container
   class StandardLibrarySort final : Comparison<C>
   {
   public:
@@ -576,7 +662,7 @@ namespace yasuzume::sorts
    * @brief Stable Sort ensures that equal items after sorting have the same order as before. Tool of standard library, here wrapped as functor.
    * @tparam C container to iterate over
    */
-  template< typename C > // Iterable
+  template< std::ranges::range C > // Iterable
   class StableStandardSort final : Comparison<C>
   {
   public:

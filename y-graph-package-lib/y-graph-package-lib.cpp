@@ -26,6 +26,8 @@ int main()
   std::vector<int> test_container6( test_container.size() );
   std::vector<int> test_container7( test_container.size() );
   std::vector<int> test_container8( test_container.size() );
+  std::vector<int> test_container9( test_container.size() );
+  std::vector<int> test_container10( test_container.size() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container2.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container3.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container4.begin() );
@@ -33,15 +35,19 @@ int main()
   std::ranges::copy( test_container.begin(), test_container.end(), test_container6.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container7.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container8.begin() );
+  std::ranges::copy( test_container.begin(), test_container.end(), test_container9.begin() );
+  std::ranges::copy( test_container.begin(), test_container.end(), test_container10.begin() );
 
-  yasuzume::sorts::BubbleSort<std::vector<int>>          bubble_sort {};
-  yasuzume::sorts::InsertionSort<std::vector<int>>       insertion_sort {};
-  yasuzume::sorts::SelectionSort<std::vector<int>>       selection_sort {};
-  yasuzume::sorts::QuickSort<std::vector<int>>           quick_sort {};
-  yasuzume::sorts::MergeSort<std::vector<int>>           merge_sort {};
-  yasuzume::sorts::StandardLibrarySort<std::vector<int>> std_sort {};
-  yasuzume::sorts::StableStandardSort<std::vector<int>>  std_stable {};
-  yasuzume::sorts::QuickSortAtomic<std::vector<int>>     quick_sort_atomic {};
+  yasuzume::sorts::BubbleSort<std::vector<int>>             bubble_sort {};
+  yasuzume::sorts::BubbleSortNonRecursive<std::vector<int>> bubble_sort_non_recursive {};
+  yasuzume::sorts::InsertionSort<std::vector<int>>          insertion_sort {};
+  yasuzume::sorts::SelectionSort<std::vector<int>>          selection_sort {};
+  yasuzume::sorts::QuickSort<std::vector<int>>              quick_sort {};
+  yasuzume::sorts::MergeSort<std::vector<int>>              merge_sort {};
+  yasuzume::sorts::StandardLibrarySort<std::vector<int>>    std_sort {};
+  yasuzume::sorts::StableStandardSort<std::vector<int>>     std_stable {};
+  yasuzume::sorts::QuickSortAtomic<std::vector<int>>        quick_sort_atomic {};
+  yasuzume::sorts::HashSort<std::vector<int>>               hash_sort { []( int a ) { return a; } };
 
   std::println( "BUBBLE SORT\n" );
   print_container( test_container );
@@ -49,6 +55,14 @@ int main()
   bubble_sort( std::begin( test_container ), std::end( test_container ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container );
+  breakln();
+
+  std::println( "BUBBLE SORT NON RECURSIVE\n" );
+  print_container( test_container9 );
+  Stopwatch::start();
+  bubble_sort_non_recursive( std::begin( test_container9 ), std::end( test_container9 ) );
+  std::println( "\n {} time\n", Stopwatch::end() );
+  print_container( test_container9 );
   breakln();
 
   std::println( "INSERTION SORT\n" );
@@ -99,7 +113,6 @@ int main()
   print_container( test_container7 );
   breakln();
 
-
   std::println( "QUICK SORT ATOMIC\n" );
   print_container( test_container8 );
   Stopwatch::start();
@@ -108,10 +121,18 @@ int main()
   print_container( test_container8 );
   breakln();
 
+  std::println( "HASH SORT\n" );
+  print_container( test_container10 );
+  Stopwatch::start();
+  hash_sort( std::begin( test_container10 ), std::end( test_container10 ) );
+  std::println( "\n {} time\n", Stopwatch::end() );
+  print_container( test_container10 );
+  breakln();
+
   yasuzume::graph::UndirectedGraph new_graph {};
-  yasuzume::graph::mst::Kruskals kruskals {};
-  yasuzume::graph::mst::Prims prims {};
-  yasuzume::graph::mst::Boruvka boruvka {};
+  yasuzume::graph::mst::Kruskals   kruskals {};
+  yasuzume::graph::mst::Prims      prims {};
+  yasuzume::graph::mst::Boruvka    boruvka {};
   new_graph.add_node( "A" );
   new_graph.add_node( "B" );
   new_graph.add_node( "C" );
@@ -173,7 +194,6 @@ int main()
   breakln( 2 );
 
   std::println( "{}", new_graph_mst_boruvka.get_graph_table_stringified() );
-
 
   return 0;
 }

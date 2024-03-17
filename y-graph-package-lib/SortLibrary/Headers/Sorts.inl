@@ -109,6 +109,8 @@ namespace yasuzume::sorts
   public:
     explicit Key( std::function<size_t( const typename C::value_type& )> _key ) : key( std::move( _key ) ) {}
 
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end, const size_t& _max_size ) = 0;
+
     /**
      * @brief Change key to a custom one
      * @param _key determinant key, condition for the placement in the vector
@@ -122,6 +124,27 @@ namespace yasuzume::sorts
   protected:
     std::function<size_t( const typename C::value_type& )> key {};
   };
+
+  template< std::ranges::range C > // C needs to be a range of T
+  class ReversibleKey : public Key<C>
+  {
+  public:
+    explicit ReversibleKey( std::function<size_t( const typename C::value_type& )> _key, std::function<const typename C::value_type( const size_t )> _builder ) : Key<C>( _key ), builder( std::move( _builder ) ) {}
+
+    /**
+     * @brief Change builder function to a new one
+     * @param _builder determinant builder, function that converts size_t to class type
+     */
+    virtual void set_builder(
+      std::function<size_t( const typename C::value_type& )> _builder )
+    {
+      builder = std::move( _builder );
+    }
+
+  protected:
+    std::function<const typename C::value_type( const size_t )> builder {};
+  };
+
 
 #pragma endregion
 
@@ -296,6 +319,7 @@ namespace yasuzume::sorts
       {
         // Look for determinant match in next positioned elements and note the last position determinant matched
         for( auto j { std::next( i ) }; j != _end; ++j ) if( Comparison<C>::determinant_( *j, *k ) ) k = j;
+
         // Swap position compared with the position determinant matched last time
         if( k != i ) std::swap( *i, *k );
         k = std::next( i );
@@ -496,7 +520,7 @@ namespace yasuzume::sorts
     template< typename T >
     struct Pair
     {
-      Pair(): second( false ) {}
+      Pair(): first(), second( false ) {}
       explicit Pair( T _val ) : first( _val ), second( false ) {}
       explicit Pair( T _val, const bool& _bool ) : first( _val ), second( _bool ) {}
       Pair( const Pair& ) = default;
@@ -509,7 +533,7 @@ namespace yasuzume::sorts
       bool second;
     };
 
-    void operator()( typename C::iterator _begin, typename C::iterator _end, const size_t& _max_val )
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end, const size_t& _max_val ) override
     {
       std::vector<utils::LinkedList<Pair<typename C::value_type>>*> temp_vector;
       temp_vector.reserve( ( _max_val + 1 ) );
@@ -553,13 +577,61 @@ namespace yasuzume::sorts
   };
 
   // TODO
-  template< std::ranges::range C, Hashable T > // Iterable container
-  class RadixSort final : Key<C>
+  template< std::ranges::range C > // Iterable container
+  class CountingSort final : ReversibleKey<C>
   {
   public:
-    explicit RadixSort( const std::function<size_t( const typename C::value_type& )>& _key ) : Key<C>( _key ) {}
+    explicit CountingSort( const std::function<size_t( const typename C::value_type& )>& _key, const std::function<typename C::value_type( const size_t )> _builder ) : ReversibleKey<C>( _key, _builder ) {}
 
-    virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override {}
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
+    {
+      size_t max_val{ 0 };
+      for( auto i { _begin }; i != _end; ++i ) if( this->key( *i ) > max_val ) max_val = *i; // Get Maximum Value
+      operator()( _begin, _end, max_val );
+    }
+
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end, const size_t& _max_val ) override
+    {
+      std::vector<int> temp_vector( _max_val + 1 );
+      std::vector<typename C::value_type> result_vector {};
+      std::ranges::fill( temp_vector.begin(), temp_vector.end(), 0 );
+      for( auto i { _begin }; i != _end; ++i ) ++temp_vector.at( this->key( *i ) );
+      size_t index { 0 };
+      for( const auto& i : temp_vector )
+      {
+        for( auto k { 0 }; k < i; k++ ) result_vector.emplace_back( this->builder( index ) );
+        ++index;
+      }
+
+      size_t j { 0 };
+      for( auto i{ _begin }; i != _end; ++i, ++j )
+      {
+        *i = result_vector.at( j );
+#ifdef _DEBUG
+
+        Sort<C>::print( _begin, _end );
+
+#endif
+      }
+    }
+
+    virtual void operator()( C& _container ) override
+    {
+      operator()( std::begin( _container ), std::end( _container ) );
+    }
+  };
+
+  // TODO
+  template< std::ranges::range C > // Iterable container
+  class RadixSort final : ReversibleKey<C>
+  {
+  public:
+    explicit RadixSort( const std::function<size_t( const typename C::value_type& )>& _key, const std::function<typename C::value_type( const size_t )> _builder ) : ReversibleKey<C>( _key, _builder ) {}
+
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
+    {
+      
+    }
 
     virtual void operator()( C& _container ) override
     {

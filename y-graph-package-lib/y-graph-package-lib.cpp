@@ -28,6 +28,7 @@ int main()
   std::vector<int> test_container8( test_container.size() );
   std::vector<int> test_container9( test_container.size() );
   std::vector<int> test_container10( test_container.size() );
+  std::vector<int> test_container11( test_container.size() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container2.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container3.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container4.begin() );
@@ -37,6 +38,7 @@ int main()
   std::ranges::copy( test_container.begin(), test_container.end(), test_container8.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container9.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container10.begin() );
+  std::ranges::copy( test_container.begin(), test_container.end(), test_container11.begin() );
 
   yasuzume::sorts::BubbleSort<std::vector<int>>             bubble_sort {};
   yasuzume::sorts::BubbleSortNonRecursive<std::vector<int>> bubble_sort_non_recursive {};
@@ -47,7 +49,8 @@ int main()
   yasuzume::sorts::StandardLibrarySort<std::vector<int>>    std_sort {};
   yasuzume::sorts::StableStandardSort<std::vector<int>>     std_stable {};
   yasuzume::sorts::QuickSortAtomic<std::vector<int>>        quick_sort_atomic {};
-  yasuzume::sorts::HashSort<std::vector<int>>               hash_sort { []( int a ) { return a; } };
+  yasuzume::sorts::HashSort<std::vector<int>>               hash_sort { []( const int    _a ) { return _a; } };
+  yasuzume::sorts::CountingSort<std::vector<int>>           counting_sort( []( const int _a ) { return _a; }, []( const size_t _a ) { return static_cast< int >( _a ); } );
 
   std::println( "BUBBLE SORT\n" );
   print_container( test_container );
@@ -127,6 +130,14 @@ int main()
   hash_sort( std::begin( test_container10 ), std::end( test_container10 ) );
   std::println( "\n {} time\n", Stopwatch::end() );
   print_container( test_container10 );
+  breakln();
+
+  std::println( "COUNTING SORT\n" );
+  print_container( test_container11 );
+  Stopwatch::start();
+  counting_sort( std::begin( test_container11 ), std::end( test_container11 ) );
+  std::println( "\n {} time\n", Stopwatch::end() );
+  print_container( test_container11 );
   breakln();
 
   yasuzume::graph::UndirectedGraph new_graph {};

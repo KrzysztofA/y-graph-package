@@ -27,6 +27,7 @@ int main()
   std::vector<int> test_container11( test_container.size() );
   std::vector<int> test_container12( test_container.size() );
   std::vector<int> test_container13( test_container.size() );
+  std::vector<int> test_container14( test_container.size() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container2.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container3.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container4.begin() );
@@ -39,6 +40,7 @@ int main()
   std::ranges::copy( test_container.begin(), test_container.end(), test_container11.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container12.begin() );
   std::ranges::copy( test_container.begin(), test_container.end(), test_container13.begin() );
+  std::ranges::copy( test_container.begin(), test_container.end(), test_container14.begin() );
 
   BubbleSort<std::vector<int>>             bubble_sort {};
   BubbleSortNonRecursive<std::vector<int>> bubble_sort_non_recursive {};
@@ -51,6 +53,7 @@ int main()
   QuickSortAtomic<std::vector<int>>        quick_sort_atomic {};
   HashSort<std::vector<int>>               hash_sort { []( const int    _a ) { return _a; } };
   CountingSort<std::vector<int>>           counting_sort( []( const int _a ) { return _a; }, []( const size_t _a ) { return static_cast<int>( _a ); } );
+  RangesStandardSort<std::vector<int>>     ranges_standard_sort {};
 
   std::println( "BUBBLE SORT\n" );
   utils::print_container( test_container );
@@ -154,6 +157,14 @@ int main()
   counting_sort( std::begin( test_container13 ), std::end( test_container13 ), 12512 );
   std::println( "\n {} time\n", utils::Stopwatch::end() );
   utils::print_container( test_container11 );
+  utils::breakln();
+
+  std::println( "RANGES SORT\n" );
+  utils::print_container( test_container14 );
+  utils::Stopwatch::start();
+  ranges_standard_sort( std::begin( test_container14 ), std::end( test_container14 ) );
+  std::println( "\n {} time\n", utils::Stopwatch::end() );
+  utils::print_container( test_container14 );
   utils::breakln();
 
   return 0;

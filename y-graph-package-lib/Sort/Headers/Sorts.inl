@@ -620,7 +620,7 @@ namespace yasuzume::sorts
   class RadixSort final : Key<C>
   {
   public:
-    explicit RadixSort( const std::function<size_t( const typename C::value_type& )>& _key, const std::function<typename C::value_type( const size_t )> _builder ) : ReversibleKey<C>( _key, _builder ) {}
+    explicit RadixSort( const std::function<size_t( const typename C::value_type& )>& _key, const std::function<typename C::value_type( const size_t )> _builder ) : Key<C>( _key, _builder ) {}
 
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
@@ -764,6 +764,25 @@ namespace yasuzume::sorts
     virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
     {
       std::stable_sort( _begin, _end, Comparison<C>::determinant_ );
+    }
+
+    virtual void operator()( C& _container ) override
+    {
+      operator()( std::begin( _container ), std::end( _container ) );
+    }
+  };
+
+    /**
+   * @brief Ranges Sort from ranges library
+   * @tparam C container to iterate over
+   */
+  template< std::ranges::range C > // Iterable
+  class RangesStandardSort final : Comparison<C>
+  {
+  public:
+    virtual void operator()( typename C::iterator _begin, typename C::iterator _end ) override
+    {
+      std::ranges::sort( _begin, _end, Comparison<C>::determinant_ );
     }
 
     virtual void operator()( C& _container ) override

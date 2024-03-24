@@ -20,6 +20,7 @@ add_executable (y-graph-package-lib-path-search
 				"y-graph-package-lib-path-search.hpp"
 				${UTILS_LIBRARY_SOURCE}
 				${UTILS_LIBRARY_HEADERS}
+				"Headers/PathSearch.inl"
 				"Source/DFS.cpp" 
 				"Source/BFS.cpp"
 				"Source/AStar.cpp"
@@ -29,6 +30,7 @@ add_executable (y-graph-package-lib-path-search
 )
 
 include_directories("../Utils/Headers")
+include_directories("Headers")
 
 set_property(TARGET y-graph-package-lib-path-search PROPERTY CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

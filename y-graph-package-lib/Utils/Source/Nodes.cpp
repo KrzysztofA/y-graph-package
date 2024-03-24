@@ -2,6 +2,7 @@
 
 #include "../Headers/Nodes.hpp"
 
+#include <cassert>
 #include <sstream>
 
 #include "../Headers/Numeric.inl"
@@ -61,6 +62,16 @@ namespace yasuzume::graph
 
 #pragma region Methods
 
+  bool GraphNode::Edge::is_valid_left() const
+  {
+    return direction == Undirected || direction == RightToLeft;
+  }
+
+  bool GraphNode::Edge::is_valid_right() const
+  {
+    return direction == Undirected || direction == LeftToRight;
+  }
+
   std::string GraphNode::Edge::get_stringified() const
   {
     std::stringstream sstream{};
@@ -101,6 +112,12 @@ namespace yasuzume::graph
     return right_node;
   }
 
+  std::weak_ptr<GraphNode> GraphNode::Edge::get_other( const std::shared_ptr<GraphNode>& _node ) const
+  {
+    assert( ( left_node.lock() == _node || right_node.lock() == _node) );
+    return _node == left_node.lock() ? right_node : left_node;
+  }
+
   void GraphNode::Edge::set_direction( const Direction _direction )
   {
     direction = _direction;
@@ -137,6 +154,14 @@ namespace yasuzume::graph
 #pragma endregion
 
 #pragma region GraphNode
+
+  std::string GraphNode::EdgeSummed::get_stringified() const
+  {
+    std::stringstream sstream{};
+    sstream << "{" << edge->get_stringified();
+    sstream << " = " << cumulated_weight << " }";
+    return sstream.str();
+  }
 
   std::shared_ptr<GraphNode::Edge> GraphNode::create_edge( const std::shared_ptr<GraphNode>& _left, const std::shared_ptr<GraphNode>& _right, float _weight, Direction _direction )
   {
@@ -185,6 +210,18 @@ namespace yasuzume::graph
   std::set<std::shared_ptr<GraphNode::Edge>> GraphNode::get_edges()
   {
     return edges;
+  }
+
+  std::vector<std::shared_ptr<GraphNode::EdgeSummed>> GraphNode::get_summed_edges( const float& _sum ) const
+  {
+    std::vector<std::shared_ptr<EdgeSummed>> summed;
+    summed.reserve( edges.size() );
+    for( const auto& edge : edges )
+    {
+      auto temp { std::make_shared<EdgeSummed>( edge, edge->get_weight() + _sum ) };
+      summed.emplace_back( temp );
+    }
+    return summed;
   }
 
   std::string GraphNode::get_name()

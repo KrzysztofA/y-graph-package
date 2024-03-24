@@ -5,7 +5,7 @@
 
 namespace yasuzume::graph::shortest_path
 {
-  class Dijkstra : public ShortestPath
+  class Dijkstra final : public ShortestPath
   {
   public:
     Dijkstra() = default;
@@ -17,8 +17,8 @@ namespace yasuzume::graph::shortest_path
 
     virtual ShortestPathTree create_shortest_path( const NodePtr&, const UndirectedGraph& ) override;
     virtual ShortestPathTree create_shortest_path( const NodePtr&, const DirectedGraph& ) override;
-    virtual Grid             create_shortest_path( const NodePtr&, const Grid& ) override;
-    virtual WeightedGrid     create_shortest_path( const NodePtr&, const WeightedGrid& ) override;
+    // virtual Grid             create_shortest_path( const NodePtr&, const Grid& ) override;
+    // virtual WeightedGrid     create_shortest_path( const NodePtr&, const WeightedGrid& ) override;
   };
 }
 

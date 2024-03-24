@@ -17,6 +17,8 @@ namespace yasuzume::utils
 
     T    first;
     bool second;
+
+    [[nodiscard]] bool is_valid() const { return second; }
   };
 }
 

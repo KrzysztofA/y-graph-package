@@ -13,5 +13,4 @@
 #include <Prims.hpp>
 #include <ReverseDelete.hpp>
 
-
 #endif // Y_GRAPH_PACKAGE_LIB_HPP

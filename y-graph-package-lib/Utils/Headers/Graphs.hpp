@@ -27,6 +27,7 @@ namespace yasuzume::graph
     void                                                     add_node( const std::string& );
     [[nodiscard]] std::set<std::shared_ptr<GraphNode::Edge>> get_edges() const;
     [[nodiscard]] std::vector<std::shared_ptr<GraphNode>>    get_nodes() const;
+    [[nodiscard]] std::shared_ptr<GraphNode>                 get_node( const std::string& _name ) const;
     void                                                     add_edge( const std::shared_ptr<GraphNode::Edge>& );
     [[nodiscard]] std::vector<std::vector<float>>            get_graph_table_representation() const;
     [[nodiscard]] float                                      get_total_graph_weight() const;
@@ -62,8 +63,17 @@ namespace yasuzume::graph
   /**
    * @brief Graph where edges can follow any direction
    */
-  class DirectedGraph final : Graph
+  class DirectedGraph final : public Graph
   {
+  public:
+    DirectedGraph() = default;
+    DirectedGraph( const DirectedGraph& ) = default;
+    explicit DirectedGraph( const Graph& );
+    DirectedGraph( DirectedGraph&& ) noexcept = default;
+    DirectedGraph& operator=( const DirectedGraph& ) = default;
+    DirectedGraph& operator=( DirectedGraph&& ) noexcept = default;
+    virtual          ~DirectedGraph() override = default;
+
     void add_connection( int, int, float, Direction );
     void add_connection( std::string, std::string, float, Direction );
   };

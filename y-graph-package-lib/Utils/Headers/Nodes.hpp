@@ -2,6 +2,7 @@
 #define Y_GRAPH_NODES_HPP
 
 #include <memory>
+#include <Numeric.inl>
 #include <set>
 #include <string>
 
@@ -41,13 +42,16 @@ namespace yasuzume::graph
       [[nodiscard]] bool operator>=( const Edge& ) const;
       [[nodiscard]] bool operator!=( const Edge& ) const;
 
-      [[nodiscard]] std::string             get_stringified() const;
+      [[nodiscard]] std::string              get_stringified() const;
       [[nodiscard]] float                    get_weight() const;
       [[nodiscard]] Direction                get_direction() const;
       [[nodiscard]] std::weak_ptr<GraphNode> get_left() const;
       [[nodiscard]] std::weak_ptr<GraphNode> get_right() const;
+      [[nodiscard]] std::weak_ptr<GraphNode> get_other( const std::shared_ptr<GraphNode>& ) const;
       void                                   set_direction( Direction );
       void                                   set_weight( float );
+      [[nodiscard]] bool                     is_valid_left() const;
+      [[nodiscard]] bool                     is_valid_right() const;
 
     private:
       float                 weight = 0;
@@ -56,12 +60,36 @@ namespace yasuzume::graph
       std::weak_ptr<GraphNode> right_node;
     };
 
+    struct EdgeSummed
+    {
+      EdgeSummed( std::shared_ptr<Edge> _edge, const float& _cumulated_weight ) : edge( std::move( _edge ) ), cumulated_weight( _cumulated_weight ) {}
+      EdgeSummed() = default;
+      EdgeSummed( const EdgeSummed& ) = default;
+      EdgeSummed( EdgeSummed&& ) noexcept = default;
+      EdgeSummed& operator=( const EdgeSummed& ) = default;
+      EdgeSummed& operator=( EdgeSummed&& ) noexcept = default;
+      ~EdgeSummed() noexcept = default;
+
+      [[nodiscard]] bool operator<( const EdgeSummed& _rhs ) const { return cumulated_weight < _rhs.cumulated_weight; }
+      [[nodiscard]] bool operator>( const EdgeSummed& _rhs ) const { return cumulated_weight > _rhs.cumulated_weight; }
+      [[nodiscard]] bool operator==( const EdgeSummed& _rhs ) const { return edge == _rhs.edge; }
+      [[nodiscard]] bool operator<=( const EdgeSummed& _rhs ) const { return cumulated_weight <= _rhs.cumulated_weight; }
+      [[nodiscard]] bool operator>=( const EdgeSummed& _rhs ) const { return cumulated_weight >= _rhs.cumulated_weight; }
+      [[nodiscard]] bool operator!=( const EdgeSummed& _rhs ) const { return this != &_rhs; }
+
+      [[nodiscard]] std::string get_stringified() const;
+
+      std::shared_ptr<Edge> edge = nullptr;
+      float cumulated_weight = 0;
+    };
+
     static std::shared_ptr<Edge> create_edge( const std::shared_ptr<GraphNode>&, const std::shared_ptr<GraphNode>&, float, Direction );
     void                         add_edge( const std::shared_ptr<Edge>& );
     void                         remove_edge( const std::shared_ptr<Edge>& );
 
-    std::set<std::shared_ptr<Edge>> get_edges();
-    std::string                     get_name();
+    std::set<std::shared_ptr<Edge>>                     get_edges();
+    std::vector<std::shared_ptr<GraphNode::EdgeSummed>> get_summed_edges( const float& ) const;
+    std::string                                         get_name();
 
   private:
     std::string                     name;

@@ -84,6 +84,11 @@ namespace yasuzume::graph
     return return_vector;
   }
 
+  std::shared_ptr<GraphNode> Graph::get_node( const std::string& _name ) const
+  {
+    return nodes_set.at( _name ).second;
+  }
+
   std::vector<std::vector<float>> Graph::get_graph_table_representation() const
   {
     return graph_table_representation;
